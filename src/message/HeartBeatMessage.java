@@ -3,6 +3,10 @@ package message;
 import java.io.Serializable;
 
 public class HeartBeatMessage extends Message implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8392248833826305927L;
 	final int utilization;
 	
 	public HeartBeatMessage(int util) {
