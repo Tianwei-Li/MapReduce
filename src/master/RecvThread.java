@@ -23,8 +23,8 @@ public class RecvThread extends Thread {
 	@Override
 	public void run() {
 		try {
-			// the inst.isActive() is false when the node is shut down
-			while (true) {
+			TestMaster inst = TestMaster.getInstance();
+			while (Thread.currentThread().isInterrupted() == false) {
 				Message message = (Message) ois.readObject();
 				if (message != null) {
 					MessageType msgType = message.getType();
@@ -35,12 +35,14 @@ public class RecvThread extends Thread {
 						HelloMessage hMsg = (HelloMessage)message;
 						name = hMsg.getName();
 						Peer onePeer = new Peer(name, hMsg.getIp(), hMsg.getPort());
-						TestMaster.getInstance().slaveMap.put(name, onePeer);
+						inst.slaveMap.put(name, onePeer);
+						
+						// add the receive thread into recvThread map
+						inst.recvThreadMap.put(name, Thread.currentThread());
 						break;
 					case HEARTBEAT_MSG:
 						System.out.println("received " + message.toString());
 						// update slave timestamp
-						TestMaster inst = TestMaster.getInstance();
 						Peer slave = inst.slaveMap.get(name);
 						slave.setTimeStamp(System.currentTimeMillis());
 						break;
@@ -65,6 +67,12 @@ public class RecvThread extends Thread {
 			e.printStackTrace();
 		}
 	}
+	
+	public void cancel() { 
+		interrupt(); 
+	}
+	
+	/*
 	public Socket send(Message message, Socket sendSock) throws IOException {
 		// setup connection if there is not already existed
 		
@@ -94,5 +102,6 @@ public class RecvThread extends Thread {
         }
         return sendSock;
 	}
+	*/
 	
 }
