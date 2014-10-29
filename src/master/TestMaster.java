@@ -16,6 +16,7 @@ public class TestMaster {
 	private static TestMaster inst = new TestMaster();
 
 	public ConcurrentHashMap<String, Peer> slaveMap;
+	public ConcurrentHashMap<String, Thread> recvThreadMap;
 	private Peer me;
 
 	private TestMaster() {}
@@ -30,6 +31,8 @@ public class TestMaster {
 		if (parseConfig(configFileName, localName) == false) {
 			return;
 		}
+		
+		ConcurrentHashMap<String, Thread> recvThreadMap = new ConcurrentHashMap<>();
 
 		// start listening thread
 		try {
