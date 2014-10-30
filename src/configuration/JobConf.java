@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import util.Pair;
 
@@ -19,9 +20,14 @@ public class JobConf {
 	private Class reducerClass;
 	private String inputPath;
 	private String outputPath;
+	private String jobId;
 	
 	public JobConf(String jobName) {
 		this.jobName = jobName;
+		jobId = String.valueOf(UUID.randomUUID().getLeastSignificantBits());
+	}
+	public String getJobId() {
+		return jobId;
 	}
 	
 	public String getJobName() {
