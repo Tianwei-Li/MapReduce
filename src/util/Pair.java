@@ -11,4 +11,10 @@ public class Pair<K, V> {
 	public String toString() {
 		return "Pair [k=" + k + ", v=" + v + "]";
 	}
+	public K getK() {
+		return k;
+	}
+	public V getV() {
+		return v;
+	}
 }
