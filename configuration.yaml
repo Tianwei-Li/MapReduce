@@ -1,0 +1,8 @@
+configuration :
+  - name : alice
+    ip : 127.0.0.1
+    port : 12345  
+  - name : bob
+    ip : 127.0.0.1
+    port : 12346
+
