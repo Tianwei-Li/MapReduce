@@ -1,36 +1,21 @@
 package file;
 
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 
 import message.FileRequestMessage;
 import message.Message;
 
 public class FileClient {
 	public static void main(String[] args) throws IOException {
-		int len = 18;
-		Message message = new FileRequestMessage("test.txt", 9, len);
-		final Socket socket = send(message, "127.0.0.1", 15217);
-		byte[] mybytearray = new byte[len];
-		InputStream is = socket.getInputStream();
-		FileOutputStream fos = new FileOutputStream("received.txt");
-		int bytesRead = is.read(mybytearray, 0, mybytearray.length);
-		int current = bytesRead;
-
-		do {
-			bytesRead = is.read(mybytearray, current,
-					(mybytearray.length - current));
-			if (bytesRead > 0)
-				current += bytesRead;
-		} while (bytesRead > 0);
-
-		String input = new String(mybytearray);
-		System.out.println(input);
+		Iterable<String> input = getInputIterator("127.0.0.1",15217, "test.txt", 9 , 18);
+		for (String line : input) {
+			System.out.println(line);
+		}
 	}
 
 	
