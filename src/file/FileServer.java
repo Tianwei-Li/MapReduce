@@ -37,17 +37,17 @@ public class FileServer {
 		inst = new FileServer();
 		inst.init(args[0]);
 		
-		RandomAccessFile file = new RandomAccessFile("test.txt", "r");
-//		System.out.println(file.readLine());
-//		System.out.println(file.readLine());
-//		System.out.println(file.readLine());
-		long fp = file.getFilePointer();
-		file = new RandomAccessFile("test.txt", "r");
-		file.seek(9);
-		//System.out.println(file.readLine());
-		byte[] bytes = new byte[18];
-		file.read(bytes, 0, 26 - 9 + 1);
-		System.out.println(new String(bytes));
+//		RandomAccessFile file = new RandomAccessFile("test.txt", "r");
+////		System.out.println(file.readLine());
+////		System.out.println(file.readLine());
+////		System.out.println(file.readLine());
+//		long fp = file.getFilePointer();
+//		file = new RandomAccessFile("test.txt", "r");
+//		file.seek(9);
+//		//System.out.println(file.readLine());
+//		byte[] bytes = new byte[18];
+//		file.read(bytes, 0, 26 - 9 + 1);
+//		System.out.println(new String(bytes));
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -126,8 +126,9 @@ public class FileServer {
 		file.read(bytesToSend, 0, len);
 		
 		OutputStream os = socket.getOutputStream();
-		System.out.println("sending file: " + filePath + " from "+ index);
 		os.write(bytesToSend);
+		os.flush();
+		System.out.println("sending file: " + filePath + " from "+ index);
 		os.close();
 		file.close();
 	}

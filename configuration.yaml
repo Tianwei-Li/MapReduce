@@ -5,4 +5,7 @@ configuration :
   - name : bob
     ip : 127.0.0.1
     port : 12346
+  - name : FileServer
+    ip : 127.0.0.1
+    port : 15217
 
