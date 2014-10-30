@@ -3,6 +3,7 @@ package file;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -21,6 +22,7 @@ public class FileServer {
 	static Peer me;
 	static FileServer inst = new FileServer();
 	static final String localName = "FileServer";
+	static final String hadoopHome = "";
 	public FileServer() {
 	}
 	
@@ -125,11 +127,33 @@ public class FileServer {
 		file.seek(index);
 		file.read(bytesToSend, 0, len);
 		
+		
 		OutputStream os = socket.getOutputStream();
 		os.write(bytesToSend);
 		os.flush();
 		System.out.println("sending file: " + filePath + " from "+ index);
 		os.close();
 		file.close();
+	}
+	
+	public static void receiveFile(Socket socket, String jobId, String taskId, int len) throws IOException {
+		byte[] mybytearray = new byte[len];
+		InputStream is = socket.getInputStream();
+		int bytesRead = is.read(mybytearray, 0, mybytearray.length);
+		int current = bytesRead;
+		do {
+			bytesRead = is.read(mybytearray, current,
+					(mybytearray.length - current));
+			if (bytesRead > 0)
+				current += bytesRead;
+		} while (bytesRead > 0);
+		File jobDir = new File(hadoopHome + jobId);
+		if (!jobDir.exists()) {
+			jobDir.mkdirs();
+		}
+		FileOutputStream fos = new FileOutputStream(hadoopHome + jobId + "/" + taskId + ".txt");
+		fos.write(mybytearray);
+		fos.close();
+		System.out.println("receiving file of \njob: " + jobId + "\ntask: " + taskId);
 	}
 }

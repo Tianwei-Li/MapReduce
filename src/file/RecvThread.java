@@ -6,6 +6,7 @@ import java.net.Socket;
 import message.FileRequestMessage;
 import message.Message;
 import message.MessageType;
+import message.SendFileRequestMessage;
 
 
 public class RecvThread extends Thread {
@@ -34,13 +35,19 @@ public class RecvThread extends Thread {
 					FileRequestMessage fMsg = (FileRequestMessage) message;
 					FileServer.sendFile(recvSocket, fMsg.getFilePath(), fMsg.getIndex(), fMsg.getLen());
 					break;
+				case SENDFILEREQUEST_MSG:
+					SendFileRequestMessage sfMsg = (SendFileRequestMessage) message;
+					//Can go wrong here.
+					recvSocket.getInputStream().read();
+					FileServer.receiveFile(recvSocket, sfMsg.getJobId(), sfMsg.getTaskId(), sfMsg.getLen());
+					break;
 				default:
 					break;
 				}
 				
 			}
 		} catch (IOException e) {
-			//e.printStackTrace();
+			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (SecurityException e) {
