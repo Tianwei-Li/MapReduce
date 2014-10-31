@@ -14,7 +14,7 @@ import message.SendFileRequestMessage;
 
 public class FileClient {
 	public static void main(String[] args) throws IOException, InterruptedException {
-		sendFile("127.0.0.1", 15217, "received.txt", "job007", "m_0007");
+		sendFileTest();
 	}
 
 	public static void reqeustFileTest() throws IOException {
@@ -22,6 +22,10 @@ public class FileClient {
 		for (String line : input) {
 			System.out.println(line);
 		}
+	}
+	
+	public static void sendFileTest() throws IOException, InterruptedException {
+		sendFile("127.0.0.1", 15217, "compcomp.jar", "job007", "m_0009.jar");
 	}
 	
 	

@@ -151,7 +151,7 @@ public class FileServer {
 		if (!jobDir.exists()) {
 			jobDir.mkdirs();
 		}
-		FileOutputStream fos = new FileOutputStream(hadoopHome + jobId + "/" + taskId + ".txt");
+		FileOutputStream fos = new FileOutputStream(hadoopHome + jobId + "/" + taskId );
 		fos.write(mybytearray);
 		fos.close();
 		System.out.println("receiving file of \njob: " + jobId + "\ntask: " + taskId);
