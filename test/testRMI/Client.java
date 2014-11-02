@@ -1,6 +1,7 @@
-package testRMI;
 
 import java.rmi.Naming;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
 
 public class Client {
@@ -15,11 +16,8 @@ public class Client {
 	   */
 	  public static void main (String[] argv) {
 	    try {
-	      LaunchTaskInterface hello = 
-	        (LaunchTaskInterface) Naming.lookup ("rmi://127.0.0.1:1099/TaskTracker_Slave1");
-	      
+	      LaunchTaskInterface hello = (LaunchTaskInterface) Naming.lookup ("rmi://128.2.220.14/TaskTracker_Slave1");
 	      System.out.println(hello.say());
-	      
 	      
 	      TaskTrackerInterface tracker = hello.createTaskTracker();
 	      tracker.createTask();
@@ -37,9 +35,11 @@ public class Client {
 	    	  
 	      }
 	      
+	      
 	    } catch (Exception e) {
 	      System.out.println ("Client exception: " + e);
 	    }
+	    
 	  }
 
 }

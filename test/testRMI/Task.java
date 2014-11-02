@@ -1,4 +1,6 @@
-package testRMI;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 public class Task extends Thread {
 	private int progress = 0;
@@ -20,8 +22,15 @@ public class Task extends Thread {
 		}
 	}
 	
-	public int checkProgress() {
-		return progress;
+	public String checkProgress() {
+		InetAddress ip = null;
+		try {
+			ip = InetAddress.getLocalHost();
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return ip.toString() + " " + progress;
 	}
 	
 	

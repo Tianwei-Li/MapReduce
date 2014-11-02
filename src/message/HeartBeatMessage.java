@@ -7,22 +7,19 @@ public class HeartBeatMessage extends Message implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 8392248833826305927L;
-	final int utilization;
+	final int mapperSlotCnt;
+	final int reducerSlotCnt;
 	
-	public HeartBeatMessage(int util) {
+	public HeartBeatMessage(int mSlotCnt, int rSlotCnt) {
 		super(MessageType.HEARTBEAT_MSG);
-		this.utilization = util;
-	}
-
-	public int getUtilization() {
-		return utilization;
+		this.mapperSlotCnt = mSlotCnt;
+		this.reducerSlotCnt = rSlotCnt;
 	}
 
 	@Override
 	public String toString() {
-		return "HeartBeatMessage [utilization=" + utilization + "]";
+		return "HeartBeatMessage [mapperSlotCnt=" + mapperSlotCnt
+				+ ", reducerSlotCnt=" + reducerSlotCnt + "]";
 	}
-	
-	
 
 }

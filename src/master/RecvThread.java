@@ -1,5 +1,6 @@
 package master;
 import java.net.*;
+import java.util.*;
 import java.io.*;
 import util.Peer;
 import message.*;
@@ -36,6 +37,8 @@ public class RecvThread extends Thread {
 						name = hMsg.getName();
 						Peer onePeer = new Peer(name, hMsg.getIp(), hMsg.getPort());
 						inst.slaveMap.put(name, onePeer);
+						ArrayList<Integer> MRSlots = new ArrayList<Integer>();
+						
 						
 						// add the receive thread into recvThread map
 						inst.recvThreadMap.put(name, Thread.currentThread());

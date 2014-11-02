@@ -1,4 +1,3 @@
-package testRMI;
 import java.rmi.*;
 import java.rmi.server.UnicastRemoteObject;
 
@@ -11,12 +10,12 @@ public class TaskTracker extends UnicastRemoteObject implements TaskTrackerInter
 
 	private Task task = null;
 	
-	public void createTask() {
+	public void createTask(jobId, taskId, inputpath, offset, length, true) {
 		task = new Task();
 		task.start();
 	}
 	
-	public int checkProgress() {
+	public String checkProgress() {
 		return task.checkProgress();
 	}
 

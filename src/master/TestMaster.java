@@ -2,7 +2,7 @@ package master;
 
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.*;
 import java.net.ServerSocket;
 
 import org.yaml.snakeyaml.Yaml;
@@ -16,8 +16,15 @@ public class TestMaster {
 	private static TestMaster inst = new TestMaster();
 
 	public ConcurrentHashMap<String, Peer> slaveMap;
+	public ConcurrentHashMap<String, ArrayList<Integer>> slaveCapacity;
 	public ConcurrentHashMap<String, Thread> recvThreadMap;
+	public BlockingQueue<Job> jobList = new LinkedBlockingQueue<Job>();
+	
+	public int maxMapperCnt = 0;
+	public int maxReducerCnt = 0;
+	
 	private Peer me;
+	
 
 	private TestMaster() {}
 
@@ -32,7 +39,9 @@ public class TestMaster {
 			return;
 		}
 		
-		ConcurrentHashMap<String, Thread> recvThreadMap = new ConcurrentHashMap<>();
+		recvThreadMap = new ConcurrentHashMap<>();
+		slaveMap = new ConcurrentHashMap<>(); 
+		slaveCapacity = new ConcurrentHashMap<String, ArrayList<Integer>>();
 
 		// start listening thread
 		try {
@@ -64,7 +73,7 @@ public class TestMaster {
 			}
 		}
 
-		if (me == null || slaveMap == null) {
+		if (me == null) {
 			return false;
 		}
 
@@ -109,6 +118,62 @@ public class TestMaster {
 		}
 		return true;
 	}
+	
+	
+	public void start() {
+		Scanner in = new Scanner(System.in);
+		while (true) {
+			System.out.println("Master node > ");
+			String line = in.nextLine();
+			
+			String[] args = line.split("\\s+");
+			if (args[0].equalsIgnoreCase("help")) {
+				printHelp();
+			} else if (args[0].equalsIgnoreCase("submit")) {
+				submitJob(args);
+			} else if (args[0].equalsIgnoreCase("monitor")) {
+				//createProcess(args);
+			} else if (args[0].equalsIgnoreCase("terminate")) {
+				terminateJob(args);
+			}else if (args[0].equalsIgnoreCase("exit")) {
+				//shutdown();
+				break;
+			} else {
+				System.out.println(line + " is not a valid command!");
+				System.out.println("input help for more information.");
+			}
+			
+		}
+		in.close();
+	}
+	
+	private void printHelp() {
+		System.out.println("submit - submit a job.");
+		System.out.println("monitor - check the progress of jobs.");
+		System.out.println("terminate - terminate a job.");
+		System.out.println("exit    - exit the application.");
+	}
+	
+	private void submitJob(String[] args) {
+		String jarName = args[1];
+		String inputFolder = args[2];
+		String outputFolder = args[3];
+		Job job = new Job(jarName, inputFolder, outputFolder);
+		jobList.add(job);
+	}
+	
+	private void terminateJob(String[] args) {
+		int jobId = Integer.parseInt(args[1]);
+		for (Job job : jobList) {
+			if (jobId == job.getJobId()) {
+				// TODO: terminate all tasks in the job
+				
+				jobList.remove(job);
+			}
+		}
+	}
+	
+	
 
 
 
@@ -116,6 +181,8 @@ public class TestMaster {
 	public static void main(String[] args) throws IOException {
 		inst = new TestMaster();
 		inst.init(args[0], args[1]);
+		
+		inst.start();
 	}
 
 
