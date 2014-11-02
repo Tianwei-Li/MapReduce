@@ -1,11 +1,5 @@
 package master;
 
-import java.util.*;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.LinkedBlockingQueue;
-
-import configuration.*;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -14,7 +8,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import configuration.JobConf;
 
@@ -23,6 +19,8 @@ public class Job {
 	public BlockingQueue<Task> waitingMapTasks;
 	public BlockingQueue<Task> waitingReduceTasks; 
 	public JobConf jobConf = null;
+	public final static String MR_HOME = "";
+	public final static String shuffleFilePrefix = "s_000";
 
 
 	public Job(JobConf conf) {
@@ -50,23 +48,11 @@ public class Job {
 	}
 	
 	
-	public void freeFinishedTasks() {
-		for (ArrayList<RunningTask> runningTasks : runningTaskMap.values()) {
-			for (RunningTask runningTask : runningTasks) {
-				runningTask.isFinished() == ture
-			}
-		}
-	}
 
 
 
 
-	public final static String MR_HOME = "";
-	public final static String shuffleFilePrefix = "s_000";
-	public Job(JobConf jobConf) {
-		this.jobConf = jobConf;
-		taskTrackerList = new ConcurrentHashMap<String, ArrayList<TaskTrackerInterface>>();
-	}
+	
 	
 	public void shuffle() throws IOException {
 		File jobDir = new File(MR_HOME + jobConf.getJobId());
