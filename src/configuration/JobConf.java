@@ -21,6 +21,8 @@ public class JobConf {
 	private String inputPath;
 	private String outputPath;
 	private String jobId;
+	private int mapSplit = 10000;
+	private int reducerNum = 2;
 	
 	public JobConf(String jobName) {
 		this.jobName = jobName;
@@ -95,5 +97,20 @@ public class JobConf {
 			System.out.println(pair.getV());
 		}
 		
+	}
+	public int getMapSplit() {
+		return mapSplit;
+	}
+	public void setMapSplit(int mapSplit) {
+		this.mapSplit = mapSplit;
+	}
+	public int getReducerNum() {
+		return reducerNum;
+	}
+	public void setReducerNum(int reducerNum) {
+		this.reducerNum = reducerNum;
+	}
+	public void setJobId(String jobId) {
+		this.jobId = jobId;
 	}
 }

@@ -1,10 +1,5 @@
 package master;
 
-import java.io.IOException;
-
-import message.HelloMessage;
-import message.Message;
-import message.MessageType;
 import util.Peer;
 
 public class HealthChkThread extends Thread {
