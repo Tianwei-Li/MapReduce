@@ -3,14 +3,21 @@ package master;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
+import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import org.yaml.snakeyaml.Yaml;
 
 import configuration.JobConf;
 
@@ -19,17 +26,42 @@ public class Job {
 	public BlockingQueue<Task> waitingMapTasks;
 	public BlockingQueue<Task> waitingReduceTasks; 
 	public JobConf jobConf = null;
-	public final static String MR_HOME = "";
+	public final static String configFile = "MRSetup.yaml";
 	public final static String shuffleFilePrefix = "s_000";
 
 
-	public Job(JobConf conf) {
+	public Job(JobConf conf) throws IOException, InterruptedException {
 		jobConf = conf;
 		runningTaskMap = new ConcurrentHashMap<String, ArrayList<RunningTask>>();
 		waitingMapTasks = new LinkedBlockingQueue<Task>();
 		waitingReduceTasks = new LinkedBlockingQueue<Task>();
+		
+		//Setup some configuration via static config file.
+		parseConfig(conf, configFile);
+		//jobConf.setReducerNum(TestMaster.getInstance().slaveMap.size());
+		
+		createTasks();
 	}
 
+	public void createTasks() throws IOException, InterruptedException {
+		int index = 0;
+		int line = jobConf.getMapSplit();
+		final String inputFile = jobConf.getInputPath();
+		RandomAccessFile reader = new RandomAccessFile(inputFile, "r");
+		while (reader.readLine() != null) {
+			line--;
+			if (line == 0) {
+				line = jobConf.getMapSplit();
+				waitingMapTasks.put(new Task(TaskType.MAP_TASK, inputFile, index,(int) reader.getFilePointer() - index));
+				index =(int) reader.getFilePointer();
+			}
+		}
+		if (line != jobConf.getMapSplit()) {
+			waitingMapTasks.put(new Task(TaskType.MAP_TASK, inputFile, index,(int) reader.getFilePointer() - index));
+		}
+		reader.close();
+	}
+	
 	/**
 	 * cancel all tasks running on that slave because the slave is down
 	 * @param slaveName
@@ -55,7 +87,7 @@ public class Job {
 	
 	
 	public void shuffle() throws IOException {
-		File jobDir = new File(MR_HOME + jobConf.getJobId());
+		File jobDir = new File(jobConf.getMRHome() + jobConf.getJobId());
 		final int reduceNumb = jobConf.getReducerNum();
 		final String prefix = jobDir + "/" + shuffleFilePrefix;
 		//split the mapper files into pieces.
@@ -75,6 +107,24 @@ public class Job {
 		}
 		
 		
+	}
+	
+	public void parseConfig(JobConf jobConf, String configFile) throws FileNotFoundException {
+		InputStream input = null;
+		input = new FileInputStream(new File(configFile));
+		Yaml yaml = new Yaml();
+		@SuppressWarnings("unchecked")
+		Map<String, Object> data = (Map<String, Object>) yaml.load(input);
+
+		Integer splitNum =(Integer) data.get("split_line_number");
+		if (splitNum != null) {
+			jobConf.setMapSplit(splitNum);
+		}
+		
+		String mrHome = (String) data.get("mr_home");
+		if (mrHome != null) {
+			jobConf.setMRHome(mrHome);
+		}
 	}
 	
 	
