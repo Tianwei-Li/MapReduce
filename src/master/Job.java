@@ -7,10 +7,17 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import testRMI.LaunchTaskInterface;
 
 import configuration.JobConf;
 
@@ -37,12 +44,94 @@ public class Job {
 	public void cancelTasks(String slaveName) {
 		if (runningTaskMap.containsKey(slaveName)) {
 			ArrayList<RunningTask> runningTasks = runningTaskMap.remove(slaveName);
+			TestMaster inst = TestMaster.getInstance();
 			for (RunningTask runningTask : runningTasks) {
+				ArrayList<Integer> slots = inst.slaveCapacity.get(slaveName);
 				if (runningTask.getTaskType() == TaskType.MAP_TASK) {
 					waitingMapTasks.add(runningTask.task);
+					slots.set(0, slots.get(0) + 1);
 				} else {
 					waitingReduceTasks.add(runningTask.task);
+					slots.set(1, slots.get(1) + 1);
 				}
+			}
+		}
+	}
+	
+	public void freeFinishedTasks() {
+		TestMaster inst = TestMaster.getInstance();
+		for (Map.Entry<String, ArrayList<RunningTask>> entry : runningTaskMap.entrySet()) {
+			String slaveName = entry.getKey();
+			ArrayList<RunningTask> runningTasks = entry.getValue();
+			for (RunningTask runningTask : runningTasks) {
+				if (runningTask.isFinished() == true) {
+					runningTasks.remove(runningTask);
+					
+					// update the slave capacity
+					ArrayList<Integer> slots = inst.slaveCapacity.get(slaveName);
+					if (runningTask.getTaskType() == TaskType.MAP_TASK) {
+						slots.set(0, slots.get(0) + 1);
+					} else {
+						slots.set(1, slots.get(1) + 1);
+					}
+				}
+			}
+		}
+	}
+	
+	
+	public void assignTasks() {
+		if (waitingReduceTasks.size() != 0) {
+			assignTask(waitingReduceTasks, 1);
+		} else {
+			assignTask(waitingMapTasks, 0);
+		}
+	}
+	
+	private void assignTask(BlockingQueue<Task> waitingTasks, int slotIdx) {
+		if (waitingTasks.size() == 0) {
+			return;
+		}
+		
+		TestMaster inst = TestMaster.getInstance();
+		for (Map.Entry<String, ArrayList<Integer>> entry : inst.slaveCapacity.entrySet()) {
+			String slaveName = entry.getKey();
+			String ip = inst.slaveMap.get(slaveName).getIp();
+			ArrayList<Integer> slots = entry.getValue();
+			if (slots.get(slotIdx) > 0) {
+				if (waitingTasks.size() == 0) {
+					return;
+				}
+				
+				Task task = waitingTasks.poll();
+				LaunchTaskInterface launcher = null;
+				try {
+					launcher = (LaunchTaskInterface) Naming.lookup ("rmi://" + ip + "/" + slaveName);
+					TaskTrackerInterface tracker = launcher.createTaskTracker();
+					tracker.createTask(task);
+					RunningTask runningTask = new RunningTask(task, tracker);
+					
+					// decrease the slot
+					slots.set(slotIdx, slots.get(slotIdx) - 1);
+					
+					// add the running task to runningTaskMap
+					ArrayList<RunningTask> runningList = null;
+					if (runningTaskMap.containsKey(slaveName) == false) {
+						runningList = new ArrayList<RunningTask>();
+					} else {
+						runningList = runningTaskMap.get(slaveName);
+					}
+					runningList.add(runningTask);
+					runningTaskMap.put(slaveName, runningList);
+					
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				} catch (NotBoundException e) {
+					e.printStackTrace();
+				}
+				
 			}
 		}
 	}
