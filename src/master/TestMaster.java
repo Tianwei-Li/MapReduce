@@ -16,6 +16,10 @@ public class TestMaster {
 	private static TestMaster inst = new TestMaster();
 
 	public ConcurrentHashMap<String, Peer> slaveMap;
+	
+	// record the free mapper and reducer slots in each slave
+	// the first integer is mapper slot
+	// the second integer is reducer slot
 	public ConcurrentHashMap<String, ArrayList<Integer>> slaveCapacity;
 	public ConcurrentHashMap<String, Thread> recvThreadMap;
 	public BlockingQueue<Job> jobList = new LinkedBlockingQueue<Job>();
