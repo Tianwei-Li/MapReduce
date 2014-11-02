@@ -30,9 +30,23 @@ public class HealthChkThread extends Thread {
 					// kill recv thread remove recvThread from recvThread map
 					inst.recvThreadMap.remove(peer.getName());
 
-					// TODO: re-assign all task in this slave to other slaves
+					// remove the aborted tasks
+					// add them back to waiting list
+					for (Job job : inst.jobList) {
+						job.cancelTasks(peer.getName());
+					}
 
 				}
+			}
+			
+			// check finished task and collect the free slot for each slave
+			for (Job job : inst.jobList) {
+				job.freeFinishedTasks();
+			}
+			
+			// assign waiting tasks to availabe slave
+			for (Job job : inst.jobList) {
+				job.assignTasks();
 			}
 			
 			try {
