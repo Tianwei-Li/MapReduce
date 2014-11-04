@@ -23,6 +23,7 @@ public class JobConf {
 	private String jobId;
 	private int mapSplit = 10000;
 	private int reducerNum = 2;
+	private String MRHome = "";
 	
 	public JobConf(String jobName) {
 		this.jobName = jobName;
@@ -112,5 +113,11 @@ public class JobConf {
 	}
 	public void setJobId(String jobId) {
 		this.jobId = jobId;
+	}
+	public String getMRHome() {
+		return MRHome;
+	}
+	public void setMRHome(String mRHome) {
+		MRHome = mRHome;
 	}
 }

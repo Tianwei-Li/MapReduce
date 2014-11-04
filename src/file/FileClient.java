@@ -18,7 +18,7 @@ public class FileClient {
 	}
 
 	public static void reqeustFileTest() throws IOException {
-		Iterable<String> input = getInputIterator("127.0.0.1",15217, "test.txt", 9 , 18);
+		Iterable<String> input = getInputIterable("127.0.0.1",15217, "test.txt", 9 , 18);
 		for (String line : input) {
 			System.out.println(line);
 		}
@@ -94,7 +94,7 @@ public class FileClient {
 		return new String(mybytearray);
 	}
 	
-	public static Iterable<String> getInputIterator(String ip, int port, String filePath, int index, int len) throws IOException {
+	public static Iterable<String> getInputIterable(String ip, int port, String filePath, int index, int len) throws IOException {
 		String input = requestFileFromServer(ip, port, filePath, index, len);
 		String[] lines = input.split("[\r\n]+");
 		return Arrays.asList(lines);
