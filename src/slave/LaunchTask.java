@@ -1,5 +1,11 @@
+package slave;
 import java.rmi.*;
 import java.rmi.server.*;
+
+import master.TaskTrackerInterface;
+
+import testRMI.LaunchTaskInterface;
+
 
 
 /**
@@ -11,13 +17,14 @@ public class LaunchTask extends UnicastRemoteObject implements LaunchTaskInterfa
    * @param msg the message of the remote object, such as "Hello, world!".
    * @exception RemoteException if the object handle cannot be constructed.
    */
-  public LaunchTask () throws RemoteException {
-    
+	TestSlave slave = null;
+  public LaunchTask (TestSlave slave) throws RemoteException {
+    this.slave = slave;
   }
   
  
   public TaskTrackerInterface createTaskTracker() throws RemoteException {
-	 TaskTracker taskTracker = new TaskTracker();
+	 TaskTracker taskTracker = new TaskTracker(slave);
 	 //taskTracker.createTask();
 	 return taskTracker;
   }
