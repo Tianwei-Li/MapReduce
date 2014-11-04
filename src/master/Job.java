@@ -28,6 +28,8 @@ public class Job {
 	public JobConf jobConf = null;
 	public final static String configFile = "MRSetup.yaml";
 	public final static String shuffleFilePrefix = "s_000";
+	public final int mapTaskNum;
+	public final int reduceTaskNum;
 
 
 	public Job(JobConf conf) throws IOException, InterruptedException {
@@ -40,26 +42,31 @@ public class Job {
 		parseConfig(conf, configFile);
 		//jobConf.setReducerNum(TestMaster.getInstance().slaveMap.size());
 		
-		createTasks();
+		mapTaskNum = createMapTasks();
+		reduceTaskNum = conf.getReducerNum();
 	}
 
-	public void createTasks() throws IOException, InterruptedException {
+	public int createMapTasks() throws IOException, InterruptedException {
 		int index = 0;
 		int line = jobConf.getMapSplit();
 		final String inputFile = jobConf.getInputPath();
 		RandomAccessFile reader = new RandomAccessFile(inputFile, "r");
+		int count = 0;
 		while (reader.readLine() != null) {
 			line--;
 			if (line == 0) {
 				line = jobConf.getMapSplit();
 				waitingMapTasks.put(new Task(TaskType.MAP_TASK, inputFile, index,(int) reader.getFilePointer() - index));
 				index =(int) reader.getFilePointer();
+				count++;
 			}
 		}
 		if (line != jobConf.getMapSplit()) {
 			waitingMapTasks.put(new Task(TaskType.MAP_TASK, inputFile, index,(int) reader.getFilePointer() - index));
+			count++;
 		}
 		reader.close();
+		return count;
 	}
 	
 	/**
