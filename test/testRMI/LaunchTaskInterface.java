@@ -1,5 +1,7 @@
 
 import java.rmi.*;
+
+import master.TaskTrackerInterface;
 /**
  * Remote Interface for the "Hello, world!" example.
  */

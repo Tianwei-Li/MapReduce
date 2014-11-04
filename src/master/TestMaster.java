@@ -67,11 +67,11 @@ public class TestMaster {
 			return false;
 		}
 		Yaml yaml = new Yaml();
-		Map<String, List<Map<String, Object>>> data = (Map<String, List<Map<String, Object>>>) yaml.load(input);
+		Map<String, Object> data = (Map<String, Object>) yaml.load(input);
 
-		for (Map.Entry<String, List<Map<String, Object>>> entry : data.entrySet()) {
+		for (Map.Entry<String, Object> entry : data.entrySet()) {
 			if (entry.getKey().equalsIgnoreCase("configuration") == true) {
-				if (parsePeers(entry.getValue(), localName) == false) {
+				if (parsePeers((List<Map<String, Object>>) entry.getValue(), localName) == false) {
 					return false;
 				}
 			}
@@ -183,6 +183,10 @@ public class TestMaster {
 
 
 	public static void main(String[] args) throws IOException {
+		if (args.length != 2) {
+			System.out.println("wrong number of arguments input!");
+			return;
+		}
 		inst = new TestMaster();
 		inst.init(args[0], args[1]);
 		
