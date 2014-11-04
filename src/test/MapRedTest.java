@@ -4,8 +4,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+import mapred.Mapper;
 import master.Job;
 import master.Task;
+import type.Context;
+import type.DoubleWritable;
+import type.IntWritable;
+import type.LongWritable;
+import type.Text;
 import configuration.JobConf;
 
 public class MapRedTest {
@@ -38,7 +44,22 @@ public class MapRedTest {
 		}
 	}
 	
-	public static void main(String[] args) throws IOException, InterruptedException {
-		createTaskTest();
+	static class testMapper extends Mapper<Text, IntWritable, LongWritable, DoubleWritable> {
+
+
+		@Override
+		public void map(Text k, IntWritable v, Context context) {
+			// TODO Auto-generated method stub
+			System.out.println("key:" + k.getText());
+			System.out.println("value:" + v.getValue());
+		}
+
+
+	
+	}
+	
+	public static void main(String[] args) throws IOException, InterruptedException, InstantiationException, IllegalAccessException {
+		testMapper tm = new testMapper();
+		tm.run("a\t1", new Context(testMapper.class));
 	}
 }

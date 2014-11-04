@@ -56,13 +56,13 @@ public class Job {
 			line--;
 			if (line == 0) {
 				line = jobConf.getMapSplit();
-				waitingMapTasks.put(new Task(TaskType.MAP_TASK, inputFile, index,(int) reader.getFilePointer() - index));
+				waitingMapTasks.put(new Task(TaskType.MAP_TASK, inputFile, index,(int) reader.getFilePointer() - index, jobConf.getMapperClass()));
 				index =(int) reader.getFilePointer();
 				count++;
 			}
 		}
 		if (line != jobConf.getMapSplit()) {
-			waitingMapTasks.put(new Task(TaskType.MAP_TASK, inputFile, index,(int) reader.getFilePointer() - index));
+			waitingMapTasks.put(new Task(TaskType.MAP_TASK, inputFile, index,(int) reader.getFilePointer() - index, jobConf.getMapperClass()));
 			count++;
 		}
 		reader.close();

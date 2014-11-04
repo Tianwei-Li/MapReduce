@@ -1,6 +1,10 @@
 package master;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import type.Context;
 
 public class Task implements Serializable{
 	/**
@@ -11,11 +15,13 @@ public class Task implements Serializable{
 	final String inPath;
 	final int index;
 	final int len;
-	public Task(TaskType type, String inPath, int index, int len) {
+	Context context;
+	public Task(TaskType type, String inPath, int index, int len, Class<?> workClass) {
 		this.type = type;
 		this.inPath = inPath;
 		this.index = index;
 		this.len = len;
+		context = new Context(workClass);
 	}
 	public TaskType getType() {
 		return type;
@@ -33,6 +39,14 @@ public class Task implements Serializable{
 	public String toString() {
 		return "Task [type=" + type + ", inPath=" + inPath + ", index=" + index
 				+ ", len=" + len + "]";
+	}
+	public Context getContext() {
+		return context;
+	}
+	
+	public void runTask(String split) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException {
+		Method method = context.getWorkClass().getMethod("run", String.class, Context.class);
+		method.invoke(context.getWorkClass().newInstance(), split, context);
 	}
 
 }
