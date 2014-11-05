@@ -29,7 +29,7 @@ public class Context implements Serializable{
 		this.jarURL = jarURL;
 		this.workClass = workClassName;
 		ClassLoader loader = URLClassLoader.newInstance(
-			    new URL[] { new URL("file:///afs/andrew.cmu.edu/usr15/wendiz/newDir/mapred.jar") }
+			    new URL[] { new URL("file://" + jarURL) }
 			);
 		Class<?> workClass = Class.forName(workClassName, false, loader);
 		inputKeyClass = WritableFacility.getClass(workClass.getGenericSuperclass(), 0, 0);
@@ -51,7 +51,7 @@ public class Context implements Serializable{
 
 	public Class<?> getWorkClass() throws MalformedURLException, ClassNotFoundException {
 		ClassLoader loader = URLClassLoader.newInstance(
-			    new URL[] { new URL("file://" + workClass) }
+			    new URL[] { new URL("file://" + jarURL) }
 			);
 		return Class.forName(this.workClass, false, loader);
 	}
