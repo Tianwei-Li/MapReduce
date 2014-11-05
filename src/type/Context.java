@@ -18,6 +18,8 @@ public class Context implements Serializable{
 	final Class<?> inputValueClass;
 	final Class<?> outputKeyClass;
 	final Class<?> outputValueClass;
+	final String jobId;
+	final String taskId;
 	
 	public Context(Class<?> workClass) {
 		this.workClass = workClass;

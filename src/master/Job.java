@@ -28,6 +28,7 @@ public class Job {
 	public JobConf jobConf = null;
 	public final static String configFile = "MRSetup.yaml";
 	public final static String shuffleFilePrefix = "s_000";
+	public final static String mapFilePrefix = "m_000";
 	public final int mapTaskNum;
 	public final int reduceTaskNum;
 
@@ -56,13 +57,13 @@ public class Job {
 			line--;
 			if (line == 0) {
 				line = jobConf.getMapSplit();
-				waitingMapTasks.put(new Task(TaskType.MAP_TASK, inputFile, index,(int) reader.getFilePointer() - index, jobConf.getMapperClass()));
+				waitingMapTasks.put(new Task(TaskType.MAP_TASK, inputFile, index,(int) reader.getFilePointer() - index, jobConf.getMapperClass(), jobConf.getJobId(), mapFilePrefix + count));
 				index =(int) reader.getFilePointer();
 				count++;
 			}
 		}
 		if (line != jobConf.getMapSplit()) {
-			waitingMapTasks.put(new Task(TaskType.MAP_TASK, inputFile, index,(int) reader.getFilePointer() - index, jobConf.getMapperClass()));
+			waitingMapTasks.put(new Task(TaskType.MAP_TASK, inputFile, index,(int) reader.getFilePointer() - index, jobConf.getMapperClass(), jobConf.getJobId(), mapFilePrefix + count));
 			count++;
 		}
 		reader.close();
