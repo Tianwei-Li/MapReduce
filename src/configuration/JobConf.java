@@ -1,12 +1,6 @@
 package configuration;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
-
-import util.Pair;
 
 
 @SuppressWarnings("rawtypes")
@@ -17,8 +11,8 @@ public class JobConf {
 	private Class inputValueClass;
 	private Class outputKeyClass;
 	private Class outputValueClass;
-	private Class mapperClass;
-	private Class reducerClass;
+	private String mapperClass;
+	private String reducerClass;
 	private String inputPath;
 	private String outputPath;
 	private String jobId;
@@ -76,16 +70,16 @@ public class JobConf {
 	public void setOutputValueClass(Class outputValueClass) {
 		this.outputValueClass = outputValueClass;
 	}
-	public Class getMapperClass() {
+	public String getMapperClass() {
 		return mapperClass;
 	}
-	public void setMapperClass(Class mapperClass) {
+	public void setMapperClass(String mapperClass) {
 		this.mapperClass = mapperClass;
 	}
-	public Class getReducerClass() {
+	public String getReducerClass() {
 		return reducerClass;
 	}
-	public void setReducerClass(Class reducerClass) {
+	public void setReducerClass(String reducerClass) {
 		this.reducerClass = reducerClass;
 	}
 	public String getInputPath() {
@@ -101,17 +95,17 @@ public class JobConf {
 		this.outputPath = outputPath;
 	}
 	
-	@SuppressWarnings("unchecked")
-	public void runMapper() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException {
-		Method mapper = mapperClass.getMethod("map", inputKeyClass, inputValueClass, List.class);
-		List<Pair<?, ?>> list = new ArrayList<>();
-		mapper.invoke(mapperClass.newInstance(), "key1","value1", list);
-		for (Pair<?,?> pair : list) {
-			System.out.println(pair.getK());
-			System.out.println(pair.getV());
-		}
-		
-	}
+//	@SuppressWarnings("unchecked")
+//	public void runMapper() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException {
+////		Method mapper = mapperClass.getMethod("map", String.class, String.class, List.class);
+////		List<Pair<?, ?>> list = new ArrayList<>();
+////		mapper.invoke(mapperClass.newInstance(), "key1","value1", list);
+////		for (Pair<?,?> pair : list) {
+////			System.out.println(pair.getK());
+////			System.out.println(pair.getV());
+////		}
+//		
+//	}
 	public int getMapSplit() {
 		return mapSplit;
 	}

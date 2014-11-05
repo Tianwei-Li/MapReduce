@@ -31,6 +31,7 @@ public class Job {
 	public final static String configFile = "MRSetup.yaml";
 	public final static String shuffleFilePrefix = "s_000";
 	public final static String mapFilePrefix = "m_000";
+	public final static String redFilePrefix = "r_000";
 	public final int mapTaskNum;
 	public final int reduceTaskNum;
 
@@ -72,8 +73,12 @@ public class Job {
 		return count;
 	}
 	
-	public void createReduceTasks(List<String> files) {
-		
+	public void createReduceTasks(List<String> files) throws InterruptedException {
+		int count = 0;
+		for (String file : files) {
+			waitingReduceTasks.put(new Task(TaskType.REDUCE_TASK, file, 0, (int)new File(file).length(), jobConf.getReducerClass(), jobConf.getJobId(), redFilePrefix + count));
+			count++;
+		}
 	}
 
 
@@ -196,7 +201,7 @@ public class Job {
 
 
 
-	public List<String> shuffle() throws IOException {
+	public void shuffle() throws IOException, InterruptedException {
 		List<String> outputFiles = new ArrayList<>();
 		File jobDir = new File(jobConf.getMRHome() + jobConf.getJobId());
 		final int reduceNumb = jobConf.getReducerNum();
@@ -221,7 +226,9 @@ public class Job {
 		for (int i = 0; i < reduceNumb; ++i) {
 			outputFiles.add(prefix + i);
 		}
-		return outputFiles;
+		
+		//fill reduce task in the queue
+		createReduceTasks(outputFiles);
 	}
 
 	public void parseConfig(JobConf jobConf, String configFile) throws FileNotFoundException {

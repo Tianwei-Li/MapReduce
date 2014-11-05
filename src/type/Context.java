@@ -13,7 +13,7 @@ public class Context implements Serializable{
 	 */
 	private static final long serialVersionUID = 3546500950581986470L;
 	final List<Pair<?, ?>> result;
-	final Class<?> workClass;
+	final String workClass;
 	final Class<?> inputKeyClass;
 	final Class<?> inputValueClass;
 	final Class<?> outputKeyClass;
@@ -21,8 +21,9 @@ public class Context implements Serializable{
 	final String jobId;
 	final String taskId;
 	
-	public Context(Class<?> workClass, String jobId, String taskId) {
-		this.workClass = workClass;
+	public Context(String workClassName, String jobId, String taskId) {
+		this.workClass = workClassName;
+		Class<?> workClass = Class.forName(workClassName, false, loader)
 		inputKeyClass = WritableFacility.getClass(workClass.getGenericSuperclass(), 0, 0);
 		inputValueClass = WritableFacility.getClass(workClass.getGenericSuperclass(), 1, 0);
 		outputKeyClass = WritableFacility.getClass(workClass.getGenericSuperclass(), 2, 0);
