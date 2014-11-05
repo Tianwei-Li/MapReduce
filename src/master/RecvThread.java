@@ -36,9 +36,13 @@ public class RecvThread extends Thread {
 						HelloMessage hMsg = (HelloMessage)message;
 						name = hMsg.getName();
 						Peer onePeer = new Peer(name, hMsg.getIp(), hMsg.getPort());
-						inst.slaveMap.put(name, onePeer);
-						ArrayList<Integer> MRSlots = new ArrayList<Integer>();
 						
+						inst.slaveMap.put(name, onePeer);
+						
+						ArrayList<Integer> MRSlots = new ArrayList<Integer>();
+						MRSlots.add(inst.mSlotCapacity);
+						MRSlots.add(inst.rSlotCapacity);
+						inst.slaveCapacity.put(name, MRSlots);
 						
 						// add the receive thread into recvThread map
 						inst.recvThreadMap.put(name, Thread.currentThread());

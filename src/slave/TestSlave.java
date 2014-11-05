@@ -24,13 +24,9 @@ import org.yaml.snakeyaml.Yaml;
 import util.Peer;
 
 public class TestSlave {
-	private Peer me = null;
-	private Peer master = null;
+	Peer me = null;
+	Peer master = null;
 	int heartBeatInterval = 5;   // in second
-	int mSlotCapacity = 0;
-	int rSlotCapacity = 0;
-	AtomicInteger mSlotCnt = null;
-	AtomicInteger rSlotCnt = null;
 
 	TestSlave(String configFileName, String localName, String masterName) {
 		// parse the configuration file
@@ -79,18 +75,10 @@ public class TestSlave {
 				}
 			}
 			
-			if (entry.getKey().equalsIgnoreCase("mappercnt") == true) {
-				mSlotCapacity = (int)(entry.getValue());
-				mSlotCnt = new AtomicInteger(mSlotCapacity);
-			}
 			
-			if (entry.getKey().equalsIgnoreCase("reducercnt") == true) {
-				rSlotCapacity = (int)(entry.getValue());
-				rSlotCnt = new AtomicInteger(rSlotCapacity);
-			}
 		}
 
-		if (me == null || master == null || mSlotCapacity == 0 || rSlotCapacity == 0) {
+		if (me == null || master == null) {
 			return false;
 		}
 
@@ -153,7 +141,7 @@ public class TestSlave {
 		// send the heat beat message
 		Thread thisThread = Thread.currentThread();
 		while (true) {
-			HeartBeatMessage heartBeatMsg = new HeartBeatMessage(mSlotCnt.get(), rSlotCnt.get());
+			HeartBeatMessage heartBeatMsg = new HeartBeatMessage();
 			send(heartBeatMsg);
 			
 			try {

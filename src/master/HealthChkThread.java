@@ -23,7 +23,12 @@ public class HealthChkThread extends Thread {
 					inst.slaveMap.remove(peer.getName());
 
 					// kill recv thread remove recvThread from recvThread map
+					RecvThread thread = (RecvThread) inst.recvThreadMap.get(peer.getName());
+					thread.cancel();
 					inst.recvThreadMap.remove(peer.getName());
+					
+					// remove the item in slave capacity map
+					inst.slaveCapacity.remove(peer.getName());
 
 					// remove the aborted tasks
 					// add them back to waiting list
@@ -39,7 +44,7 @@ public class HealthChkThread extends Thread {
 				job.freeFinishedTasks();
 			}
 			
-			// assign waiting tasks to availabe slave
+			// assign waiting tasks to available slave
 			for (Job job : inst.jobList) {
 				job.assignTasks();
 			}

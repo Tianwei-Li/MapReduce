@@ -2,6 +2,7 @@ package slave;
 import java.rmi.*;
 import java.rmi.server.UnicastRemoteObject;
 
+import master.Task;
 import master.TaskTrackerInterface;
 
 
@@ -12,18 +13,15 @@ public class TaskTracker extends UnicastRemoteObject implements TaskTrackerInter
 		this.slave = slave;
 	}
 
-	private TaskThread task = null;
+	private TaskThread taskThread = null;
 	
-	public void createTask(jobId, taskId, inputpath, offset, length, true) {
-		task = new TaskThread(slave);
-		task.start();
-		
-		// TODO: reduece the mSlotCnt or rSlotCnt of this slave
-		
+	public void createTask(Task task) {
+		taskThread = new TaskThread(slave, task);
+		taskThread.start();		
 	}
 	
 	public boolean checkProgress() {
-		return task.checkProgress();
+		return taskThread.checkProgress();
 	}
 
 }

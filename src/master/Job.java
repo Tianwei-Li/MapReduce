@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.RandomAccessFile;
+import java.rmi.Naming;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -37,11 +38,11 @@ public class Job {
 		runningTaskMap = new ConcurrentHashMap<String, ArrayList<RunningTask>>();
 		waitingMapTasks = new LinkedBlockingQueue<Task>();
 		waitingReduceTasks = new LinkedBlockingQueue<Task>();
-		
+
 		//Setup some configuration via static config file.
 		parseConfig(conf, configFile);
 		//jobConf.setReducerNum(TestMaster.getInstance().slaveMap.size());
-		
+
 		mapTaskNum = createMapTasks();
 		reduceTaskNum = conf.getReducerNum();
 	}
@@ -68,7 +69,8 @@ public class Job {
 		reader.close();
 		return count;
 	}
-	
+
+
 	/**
 	 * cancel all tasks running on that slave because the slave is down
 	 * @param slaveName
@@ -85,14 +87,109 @@ public class Job {
 			}
 		}
 	}
+
+	public void freeFinishedTasks() {
+		TestMaster inst = TestMaster.getInstance();
+		for (Map.Entry<String, ArrayList<RunningTask>> entry : runningTaskMap.entrySet()) {
+			String slaveName = entry.getKey();
+			ArrayList<RunningTask> runningTasks = entry.getValue();
+			for (RunningTask runningTask : runningTasks) {
+				if (runningTask.isFinished() == true) {
+					runningTasks.remove(runningTask);
+
+					// update the slave capacity
+					ArrayList<Integer> slots = inst.slaveCapacity.get(slaveName);
+					if (runningTask.getTaskType() == TaskType.MAP_TASK) {
+						slots.set(0, slots.get(0) + 1);
+					} else {
+						slots.set(1, slots.get(1) + 1);
+					}
+				}
+			}
+		}
+	}
 	
-	
+	public void terminateJob() {
+		TestMaster inst = TestMaster.getInstance();
+		for (Map.Entry<String, ArrayList<RunningTask>> entry : runningTaskMap.entrySet()) {
+			String slaveName = entry.getKey();
+			ArrayList<RunningTask> runningTasks = entry.getValue();
+			for (RunningTask runningTask : runningTasks) {
+				runningTasks.remove(runningTask);
+
+				// update the slave capacity
+				ArrayList<Integer> slots = inst.slaveCapacity.get(slaveName);
+				if (runningTask.getTaskType() == TaskType.MAP_TASK) {
+					slots.set(0, slots.get(0) + 1);
+				} else {
+					slots.set(1, slots.get(1) + 1);
+				}
+			}
+		}
+	}
+
+
+	public void assignTasks() {
+		if (waitingReduceTasks.size() != 0) {
+			assignTask(waitingReduceTasks, 1);
+		} else {
+			assignTask(waitingMapTasks, 0);
+		}
+	}
+
+	private void assignTask(BlockingQueue<Task> waitingTasks, int slotIdx) {
+		if (waitingTasks.size() == 0) {
+			return;
+		}
+
+		TestMaster inst = TestMaster.getInstance();
+		for (Map.Entry<String, ArrayList<Integer>> entry : inst.slaveCapacity.entrySet()) {
+			String slaveName = entry.getKey();
+			String ip = inst.slaveMap.get(slaveName).getIp();
+			ArrayList<Integer> slots = entry.getValue();
+			if (slots.get(slotIdx) > 0) {
+				if (waitingTasks.size() == 0) {
+					return;
+				}
+
+				Task task = waitingTasks.poll();
+				LaunchTaskInterface launcher = null;
+				try {
+					launcher = (LaunchTaskInterface) Naming.lookup ("rmi://" + ip + "/" + slaveName);
+					TaskTrackerInterface tracker = launcher.createTaskTracker();
+					tracker.createTask(task);
+					RunningTask runningTask = new RunningTask(task, tracker);
+
+					// decrease the slot
+					slots.set(slotIdx, slots.get(slotIdx) - 1);
+
+					// add the running task to runningTaskMap
+					ArrayList<RunningTask> runningList = null;
+					if (runningTaskMap.containsKey(slaveName) == false) {
+						runningList = new ArrayList<RunningTask>();
+					} else {
+						runningList = runningTaskMap.get(slaveName);
+					}
+					runningList.add(runningTask);
+					runningTaskMap.put(slaveName, runningList);
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+			}
+		}
+	}
 
 
 
 
-	
-	
+
+
+
+
+
+
 	public void shuffle() throws IOException {
 		File jobDir = new File(jobConf.getMRHome() + jobConf.getJobId());
 		final int reduceNumb = jobConf.getReducerNum();
@@ -106,16 +203,16 @@ public class Job {
 				hashcode = hashcode < 0 ? hashcode * -1 : hashcode;
 				String reducer = String.valueOf(hashcode % reduceNumb);
 				try(PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(prefix + reducer , true)))) {
-				    out.println(line);
+					out.println(line);
 				}catch (IOException e) {
 				}
 			}
 			br.close();
 		}
-		
-		
+
+
 	}
-	
+
 	public void parseConfig(JobConf jobConf, String configFile) throws FileNotFoundException {
 		InputStream input = null;
 		input = new FileInputStream(new File(configFile));
@@ -127,13 +224,13 @@ public class Job {
 		if (splitNum != null) {
 			jobConf.setMapSplit(splitNum);
 		}
-		
+
 		String mrHome = (String) data.get("mr_home");
 		if (mrHome != null) {
 			jobConf.setMRHome(mrHome);
 		}
 	}
-	
-	
+
+
 
 }
