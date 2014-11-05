@@ -21,13 +21,15 @@ public class Context implements Serializable{
 	final String jobId;
 	final String taskId;
 	
-	public Context(Class<?> workClass) {
+	public Context(Class<?> workClass, String jobId, String taskId) {
 		this.workClass = workClass;
 		inputKeyClass = WritableFacility.getClass(workClass.getGenericSuperclass(), 0, 0);
 		inputValueClass = WritableFacility.getClass(workClass.getGenericSuperclass(), 1, 0);
 		outputKeyClass = WritableFacility.getClass(workClass.getGenericSuperclass(), 2, 0);
 		outputValueClass = WritableFacility.getClass(workClass.getGenericSuperclass(), 3, 0);
 		result = new ArrayList<>();
+		this.jobId = jobId;
+		this.taskId = taskId;
 	}
 	
 	public void collect(Pair<?, ?> pair) {

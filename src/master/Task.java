@@ -21,7 +21,7 @@ public class Task implements Serializable{
 		this.inPath = inPath;
 		this.index = index;
 		this.len = len;
-		context = new Context(workClass);
+		context = new Context(workClass, taskId, jobId);
 	}
 	public TaskType getType() {
 		return type;
