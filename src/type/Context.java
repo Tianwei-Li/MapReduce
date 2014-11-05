@@ -1,6 +1,9 @@
 package type;
 
 import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,16 +16,22 @@ public class Context implements Serializable{
 	 */
 	private static final long serialVersionUID = 3546500950581986470L;
 	final List<Pair<?, ?>> result;
-	final Class<?> workClass;
+	final String workClass;
 	final Class<?> inputKeyClass;
 	final Class<?> inputValueClass;
 	final Class<?> outputKeyClass;
 	final Class<?> outputValueClass;
 	final String jobId;
 	final String taskId;
+	final String jarURL;
 	
-	public Context(Class<?> workClass, String jobId, String taskId) {
-		this.workClass = workClass;
+	public Context(String jarURL, String workClassName, String jobId, String taskId) throws ClassNotFoundException, MalformedURLException {
+		this.jarURL = jarURL;
+		this.workClass = workClassName;
+		ClassLoader loader = URLClassLoader.newInstance(
+			    new URL[] { new URL("file:///afs/andrew.cmu.edu/usr15/wendiz/newDir/mapred.jar") }
+			);
+		Class<?> workClass = Class.forName(workClassName, false, loader);
 		inputKeyClass = WritableFacility.getClass(workClass.getGenericSuperclass(), 0, 0);
 		inputValueClass = WritableFacility.getClass(workClass.getGenericSuperclass(), 1, 0);
 		outputKeyClass = WritableFacility.getClass(workClass.getGenericSuperclass(), 2, 0);
@@ -40,8 +49,11 @@ public class Context implements Serializable{
 		return result;
 	}
 
-	public Class<?> getWorkClass() {
-		return workClass;
+	public Class<?> getWorkClass() throws MalformedURLException, ClassNotFoundException {
+		ClassLoader loader = URLClassLoader.newInstance(
+			    new URL[] { new URL("file://" + workClass) }
+			);
+		return Class.forName(this.workClass, false, loader);
 	}
 
 	public Class<?> getInputKeyClass() {

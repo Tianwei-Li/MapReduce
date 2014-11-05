@@ -189,15 +189,9 @@ public class TestMaster {
 		config.setInputPath(args[3]);
 		config.setOutputPath(args[4]);
 		
-		// get the mapper and reducer class file
-		ClassLoader loader = URLClassLoader.newInstance (
-			    new URL[] { new URL("file://" + args[2]) }
-			);
-		Class mapperClass = Class.forName(args[5], false, loader);
-		Class reduceClass = Class.forName(args[6], false, loader);
 		
-		config.setMapperClass(mapperClass);
-		config.setReducerClass(reduceClass);
+		config.setMapperClass(args[5]);
+		config.setReducerClass(args[6]);
 		
 		Job job = new Job(config);
 		jobList.add(job);

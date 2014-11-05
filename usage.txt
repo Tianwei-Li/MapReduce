@@ -2,7 +2,7 @@ usage:
 1. cd to bin, run rmiregistry&
 2. in bin folder, run rmic slave.LaunchTask
 3. run master
-4. run slave: in bin folder: java -classpath ./:./slave/:../snakeyaml-1.13.jar:../testcase/jar/ slave.TestSlave ../configuration.yaml alice master
+4. run slave: in bin folder: java -classpath ./:./slave/:../snakeyaml-1.13.jar slave.TestSlave ../configuration.yaml alice master
 
 
 
