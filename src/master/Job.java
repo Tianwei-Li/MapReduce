@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.RandomAccessFile;
+import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,7 @@ public class Job {
 	public final int reduceTaskNum;
 
 
-	public Job(JobConf conf) throws IOException, InterruptedException {
+	public Job(JobConf conf) throws IOException, InterruptedException, ClassNotFoundException {
 		jobConf = conf;
 		runningTaskMap = new ConcurrentHashMap<String, ArrayList<RunningTask>>();
 		waitingMapTasks = new LinkedBlockingQueue<Task>();
@@ -50,7 +51,7 @@ public class Job {
 		reduceTaskNum = conf.getReducerNum();
 	}
 
-	public int createMapTasks() throws IOException, InterruptedException {
+	public int createMapTasks() throws IOException, InterruptedException, ClassNotFoundException {
 		int index = 0;
 		int line = jobConf.getMapSplit();
 		final String inputFile = jobConf.getInputPath();
@@ -60,23 +61,23 @@ public class Job {
 			line--;
 			if (line == 0) {
 				line = jobConf.getMapSplit();
-				waitingMapTasks.put(new Task(TaskType.MAP_TASK, inputFile, index,(int) reader.getFilePointer() - index, jobConf.getMapperClass(), jobConf.getJobId(), mapFilePrefix + count));
+				waitingMapTasks.put(new Task(jobConf.getJarUrl(), TaskType.MAP_TASK, inputFile, index,(int) reader.getFilePointer() - index, jobConf.getMapperClass(), jobConf.getJobId(), mapFilePrefix + count));
 				index =(int) reader.getFilePointer();
 				count++;
 			}
 		}
 		if (line != jobConf.getMapSplit()) {
-			waitingMapTasks.put(new Task(TaskType.MAP_TASK, inputFile, index,(int) reader.getFilePointer() - index, jobConf.getMapperClass(), jobConf.getJobId(), mapFilePrefix + count));
+			waitingMapTasks.put(new Task(jobConf.getJarUrl(), TaskType.MAP_TASK, inputFile, index,(int) reader.getFilePointer() - index, jobConf.getMapperClass(), jobConf.getJobId(), mapFilePrefix + count));
 			count++;
 		}
 		reader.close();
 		return count;
 	}
 	
-	public void createReduceTasks(List<String> files) throws InterruptedException {
+	public void createReduceTasks(List<String> files) throws InterruptedException, ClassNotFoundException, MalformedURLException {
 		int count = 0;
 		for (String file : files) {
-			waitingReduceTasks.put(new Task(TaskType.REDUCE_TASK, file, 0, (int)new File(file).length(), jobConf.getReducerClass(), jobConf.getJobId(), redFilePrefix + count));
+			waitingReduceTasks.put(new Task(jobConf.getJarUrl(), TaskType.REDUCE_TASK, file, 0, (int)new File(file).length(), jobConf.getReducerClass(), jobConf.getJobId(), redFilePrefix + count));
 			count++;
 		}
 	}
@@ -201,7 +202,7 @@ public class Job {
 
 
 
-	public void shuffle() throws IOException, InterruptedException {
+	public void shuffle() throws IOException, InterruptedException, ClassNotFoundException {
 		List<String> outputFiles = new ArrayList<>();
 		File jobDir = new File(jobConf.getMRHome() + jobConf.getJobId());
 		final int reduceNumb = jobConf.getReducerNum();
