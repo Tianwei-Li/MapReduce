@@ -12,6 +12,7 @@ import util.Pair;
 @SuppressWarnings("rawtypes")
 public class JobConf {
 	private String jobName;
+	private String jarUrl;
 	private Class inputKeyClass;
 	private Class inputValueClass;
 	private Class outputKeyClass;
@@ -29,6 +30,18 @@ public class JobConf {
 		this.jobName = jobName;
 		jobId = String.valueOf(UUID.randomUUID().getLeastSignificantBits());
 	}
+	
+	
+	public String getJarUrl() {
+		return jarUrl;
+	}
+
+
+	public void setJarUrl(String jarUrl) {
+		this.jarUrl = jarUrl;
+	}
+
+
 	public String getJobId() {
 		return jobId;
 	}

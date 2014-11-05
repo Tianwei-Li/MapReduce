@@ -4,8 +4,12 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.net.ServerSocket;
+import java.net.URL;
+import java.net.URLClassLoader;
 
 import org.yaml.snakeyaml.Yaml;
+
+import configuration.JobConf;
 
 import util.Peer;
 
@@ -24,8 +28,8 @@ public class TestMaster {
 	public ConcurrentHashMap<String, Thread> recvThreadMap;
 	public BlockingQueue<Job> jobList = new LinkedBlockingQueue<Job>();
 	
-	public int maxMapperCnt = 0;
-	public int maxReducerCnt = 0;
+	public int mSlotCapacity = 0;
+	public int rSlotCapacity = 0;
 	
 	private Peer me;
 	
@@ -43,6 +47,7 @@ public class TestMaster {
 			return;
 		}
 		
+		// the three map should be sync
 		recvThreadMap = new ConcurrentHashMap<>();
 		slaveMap = new ConcurrentHashMap<>(); 
 		slaveCapacity = new ConcurrentHashMap<String, ArrayList<Integer>>();
@@ -75,9 +80,17 @@ public class TestMaster {
 					return false;
 				}
 			}
+			
+			if (entry.getKey().equalsIgnoreCase("mappercnt") == true) {
+				mSlotCapacity = (int)(entry.getValue());
+			}
+			
+			if (entry.getKey().equalsIgnoreCase("reducercnt") == true) {
+				rSlotCapacity = (int)(entry.getValue());
+			}
 		}
 
-		if (me == null) {
+		if (me == null || mSlotCapacity == 0 || rSlotCapacity == 0) {
 			return false;
 		}
 
@@ -124,7 +137,7 @@ public class TestMaster {
 	}
 	
 	
-	public void start() {
+	public void start() throws IOException, InterruptedException, ClassNotFoundException {
 		Scanner in = new Scanner(System.in);
 		while (true) {
 			System.out.println("Master node > ");
@@ -158,20 +171,32 @@ public class TestMaster {
 		System.out.println("exit    - exit the application.");
 	}
 	
-	private void submitJob(String[] args) {
-		String jarName = args[1];
-		String inputFolder = args[2];
-		String outputFolder = args[3];
-		Job job = new Job(jarName, inputFolder, outputFolder);
+	public void submitJob(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
+		JobConf config = new JobConf(args[1]);
+		config.setJarUrl(args[2]);
+		config.setInputPath(args[3]);
+		config.setOutputPath(args[4]);
+		
+		// get the mapper and reducer class file
+		ClassLoader loader = URLClassLoader.newInstance(
+			    new URL[] { new URL("file:///afs/andrew.cmu.edu/usr15/wendiz/newDir/mapred.jar") }
+			);
+		Class mapperClass = Class.forName(args[5], false, loader);
+		Class reduceClass = Class.forName(args[6], false, loader);
+		
+		config.setMapperClass(mapperClass);
+		config.setReducerClass(reduceClass);
+		
+		Job job = new Job(config);
 		jobList.add(job);
 	}
 	
 	private void terminateJob(String[] args) {
-		int jobId = Integer.parseInt(args[1]);
+		String jobId = args[1];
 		for (Job job : jobList) {
-			if (jobId == job.getJobId()) {
-				// TODO: terminate all tasks in the job
-				
+			if (jobId.equalsIgnoreCase(job.jobConf.getJobId())) {
+				// terminate all tasks in the job
+				job.terminateJob();
 				jobList.remove(job);
 			}
 		}
@@ -182,7 +207,7 @@ public class TestMaster {
 
 
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
 		if (args.length != 2) {
 			System.out.println("wrong number of arguments input!");
 			return;
