@@ -11,4 +11,6 @@ configuration :
 
 mappercnt : 5
 reducercnt : 2
+masterlogfile : master_log.txt
+slavelogfile : slave_log.txt
 
