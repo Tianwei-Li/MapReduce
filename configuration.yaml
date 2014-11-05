@@ -1,8 +1,8 @@
 configuration :
-  - name : alice
+  - name : master
     ip : 127.0.0.1
     port : 12345  
-  - name : bob
+  - name : alice
     ip : 127.0.0.1
     port : 12346
   - name : FileServer

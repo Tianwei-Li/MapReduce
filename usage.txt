@@ -1,0 +1,12 @@
+usage:
+1. cd to bin, run rmiregistry&
+2. in bin folder, run rmic slave.LaunchTask
+3. run master
+4. run slave: in bin folder: java -classpath ./:./slave/:../snakeyaml-1.13.jar slave.TestSlave ../configuration.yaml alice master
+
+
+
+
+
+
+submit job1 /Volumes/HDD/Dropbox/CMU_course/15440_DS/MapReduce/testcase/test.jar /Volumes/HDD/Dropbox/CMU_course/15440_DS/MapReduce/testcase/input/testcase.txt /Volumes/HDD/Dropbox/CMU_course/15440_DS/MapReduce/testcase/output/ tool.CompComp$Map tool.CompComp$Map

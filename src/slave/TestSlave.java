@@ -8,14 +8,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.net.UnknownHostException;
 import java.rmi.Naming;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import message.*;
 
@@ -185,6 +185,9 @@ public class TestSlave {
 			System.out.println("wrong number of arguments input!");
 			return;
 		}
+		
+		 
+        
 		TestSlave slave = new TestSlave(args[0], args[1], args[2]);
 		slave.start();
 	}
