@@ -16,12 +16,12 @@ public class Task implements Serializable{
 	final int index;
 	final int len;
 	Context context;
-	public Task(TaskType type, String inPath, int index, int len, Class<?> workClass) {
+	public Task(TaskType type, String inPath, int index, int len, Class<?> workClass, String taskId, String jobId) {
 		this.type = type;
 		this.inPath = inPath;
 		this.index = index;
 		this.len = len;
-		context = new Context(workClass);
+		context = new Context(workClass, taskId, jobId);
 	}
 	public TaskType getType() {
 		return type;
