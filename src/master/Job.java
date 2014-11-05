@@ -13,6 +13,7 @@ import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.rmi.Naming;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -69,6 +70,10 @@ public class Job {
 		}
 		reader.close();
 		return count;
+	}
+	
+	public void createReduceTasks(List<String> files) {
+		
 	}
 
 
@@ -191,7 +196,8 @@ public class Job {
 
 
 
-	public void shuffle() throws IOException {
+	public List<String> shuffle() throws IOException {
+		List<String> outputFiles = new ArrayList<>();
 		File jobDir = new File(jobConf.getMRHome() + jobConf.getJobId());
 		final int reduceNumb = jobConf.getReducerNum();
 		final String prefix = jobDir + "/" + shuffleFilePrefix;
@@ -210,8 +216,12 @@ public class Job {
 			}
 			br.close();
 		}
-
-
+		
+		//Generating shuffle file paths
+		for (int i = 0; i < reduceNumb; ++i) {
+			outputFiles.add(prefix + i);
+		}
+		return outputFiles;
 	}
 
 	public void parseConfig(JobConf jobConf, String configFile) throws FileNotFoundException {
