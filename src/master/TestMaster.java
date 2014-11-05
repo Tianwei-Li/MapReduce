@@ -33,8 +33,6 @@ public class TestMaster {
 	public int mSlotCapacity = 0;
 	public int rSlotCapacity = 0;
 	
-	public String logFilePath = null;
-	
 	private Peer me;
 	
 

@@ -1,10 +1,9 @@
 package master;
 
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 
 import type.Context;
 
@@ -18,12 +17,12 @@ public class Task implements Serializable{
 	final int index;
 	final int len;
 	Context context;
-	public Task(TaskType type, String inPath, int index, int len, Class<?> workClass, String taskId, String jobId) {
+	public Task(String url, TaskType type, String inPath, int index, int len, String workClass, String taskId, String jobId) throws ClassNotFoundException, MalformedURLException {
 		this.type = type;
 		this.inPath = inPath;
 		this.index = index;
 		this.len = len;
-		context = new Context(workClass, taskId, jobId);
+		context = new Context(url, workClass, taskId, jobId);
 	}
 	public TaskType getType() {
 		return type;
@@ -45,14 +44,10 @@ public class Task implements Serializable{
 	public Context getContext() {
 		return context;
 	}
-
-	public void runTask(String split) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, FileNotFoundException {
+	
+	public void runTask(String split) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, MalformedURLException, ClassNotFoundException {
 		Method method = context.getWorkClass().getMethod("run", String.class, Context.class);
 		method.invoke(context.getWorkClass().newInstance(), split, context);
-
-		PrintWriter writer = new PrintWriter("slave_log.txt");
-		writer.println(context.getResult());
-		writer.close();
 	}
 
 }
