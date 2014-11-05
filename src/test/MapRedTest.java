@@ -60,6 +60,6 @@ public class MapRedTest {
 	
 	public static void main(String[] args) throws IOException, InterruptedException, InstantiationException, IllegalAccessException {
 		testMapper tm = new testMapper();
-		tm.run("a\t1", new Context(testMapper.class, "job007", "m_001"));
+		tm.run("231", new Context(testMapper.class, "job007", "m_001"));
 	}
 }

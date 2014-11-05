@@ -22,7 +22,9 @@ public class RecordReader<K, V> {
 		List<Pair<K, V>> list = new ArrayList<>();
 		for (final String line : lines) {
 			int index = line.indexOf('\t');
-			String keyString = line.substring(0, index);
+			String keyString = "";
+			if (index != -1)
+				keyString = line.substring(0, index);
 			String valString = line.substring(index + 1);
 			Writable writableKey = ((Writable)context.getInputKeyClass().newInstance()).parse(keyString);
 			Writable writableVal =((Writable) context.getInputValueClass().newInstance()).parse(valString);
