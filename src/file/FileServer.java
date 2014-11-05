@@ -23,8 +23,7 @@ public class FileServer {
 	static FileServer inst = new FileServer();
 	static final String localName = "FileServer";
 	static final String hadoopHome = "";
-	public FileServer() {
-	}
+	private FileServer() {}
 	
 	public void init(String configFileName) throws IOException {
 		if (parseConfig(configFileName, localName) == false) {
@@ -36,7 +35,7 @@ public class FileServer {
 	}
 	
 	public static void main(String[] args) throws IOException {
-		inst = new FileServer();
+		inst = FileServer.getInstance();
 		inst.init(args[0]);
 		
 //		RandomAccessFile file = new RandomAccessFile("test.txt", "r");

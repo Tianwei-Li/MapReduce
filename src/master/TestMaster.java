@@ -10,6 +10,7 @@ import java.net.URLClassLoader;
 import org.yaml.snakeyaml.Yaml;
 
 import configuration.JobConf;
+import file.FileServer;
 
 import util.Peer;
 
@@ -17,6 +18,7 @@ import util.Peer;
 public class TestMaster {
 	public ServerSocket listenSock;
 	public ListenThread listenThread;
+	public HealthChkThread healthChkThread;
 	private static TestMaster inst = new TestMaster();
 
 	public ConcurrentHashMap<String, Peer> slaveMap;
@@ -40,7 +42,7 @@ public class TestMaster {
 		return inst;
 	}
 
-	public void init(String configFileName, String localName) {
+	public void init(String configFileName, String localName) throws IOException {
 
 		// parse the configuration file
 		if (parseConfig(configFileName, localName) == false) {
@@ -60,6 +62,14 @@ public class TestMaster {
 		}
 		listenThread = new ListenThread();
 		listenThread.start();
+		
+		// initialize file server
+		FileServer fileInst = FileServer.getInstance();
+		fileInst.init(configFileName);
+		
+		// start health check thread
+		healthChkThread = new HealthChkThread();
+		healthChkThread.start();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -178,8 +188,8 @@ public class TestMaster {
 		config.setOutputPath(args[4]);
 		
 		// get the mapper and reducer class file
-		ClassLoader loader = URLClassLoader.newInstance(
-			    new URL[] { new URL("file:///afs/andrew.cmu.edu/usr15/wendiz/newDir/mapred.jar") }
+		ClassLoader loader = URLClassLoader.newInstance (
+			    new URL[] { new URL("file://" + args[2]) }
 			);
 		Class mapperClass = Class.forName(args[5], false, loader);
 		Class reduceClass = Class.forName(args[6], false, loader);
