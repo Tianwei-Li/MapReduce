@@ -1,5 +1,7 @@
 package master;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -45,9 +47,14 @@ public class Task implements Serializable{
 		return context;
 	}
 	
-	public void runTask(String split) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, MalformedURLException, ClassNotFoundException {
+	public void runTask(String split) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, MalformedURLException, ClassNotFoundException, FileNotFoundException {
 		Method method = context.getWorkClass().getMethod("run", String.class, Context.class);
 		method.invoke(context.getWorkClass().newInstance(), split, context);
+		
+
+		PrintWriter writer = new PrintWriter("slave_log.txt");
+		writer.println(context.getResult());
+		writer.close();
 	}
 
 }
