@@ -6,7 +6,7 @@ usage:
 
 
 
-
+run master: in bin folder: java -classpath ./:../snakeyaml-1.13.jar master.TestMaster ../configuration.yaml master
 
 
 submit job1 /Volumes/HDD/Dropbox/CMU_course/15440_DS/MapReduce/testcase/jar/test.jar /Volumes/HDD/Dropbox/CMU_course/15440_DS/MapReduce/testcase/input/testcase.txt /Volumes/HDD/Dropbox/CMU_course/15440_DS/MapReduce/testcase/output/ tool.CompComp$Map tool.CompComp$Map

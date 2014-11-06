@@ -48,7 +48,7 @@ public class RecvThread extends Thread {
 						inst.recvThreadMap.put(name, Thread.currentThread());
 						break;
 					case HEARTBEAT_MSG:
-						System.out.println("received " + message.toString());
+						//System.out.println("received " + message.toString());
 						// update slave timestamp
 						Peer slave = inst.slaveMap.get(name);
 						slave.setTimeStamp(System.currentTimeMillis());

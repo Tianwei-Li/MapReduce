@@ -29,7 +29,6 @@ public class Job {
 	public BlockingQueue<Task> waitingMapTasks;
 	public BlockingQueue<Task> waitingReduceTasks; 
 	public JobConf jobConf = null;
-	public final static String configFile = "MRSetup.yaml";
 	public final static String shuffleFilePrefix = "s_000";
 	public final static String mapFilePrefix = "m_000";
 	public final static String redFilePrefix = "r_000";
@@ -44,7 +43,7 @@ public class Job {
 		waitingReduceTasks = new LinkedBlockingQueue<Task>();
 
 		//Setup some configuration via static config file.
-		parseConfig(conf, configFile);
+		parseConfig(conf, TestMaster.getInstance().configFile);
 		//jobConf.setReducerNum(TestMaster.getInstance().slaveMap.size());
 
 		mapTaskNum = createMapTasks();
