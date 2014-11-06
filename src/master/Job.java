@@ -60,13 +60,15 @@ public class Job {
 			line--;
 			if (line == 0) {
 				line = jobConf.getMapSplit();
-				waitingMapTasks.put(new Task(jobConf.getJarUrl(), TaskType.MAP_TASK, inputFile, index,(int) reader.getFilePointer() - index, jobConf.getMapperClass(), jobConf.getJobId(), mapFilePrefix + count));
+				String outputPath = jobConf.getMRHome() + jobConf.getJobId() + "/" + mapFilePrefix + count;
+				waitingMapTasks.put(new Task(jobConf.getJarUrl(), TaskType.MAP_TASK, inputFile, index,(int) reader.getFilePointer() - index, jobConf.getMapperClass(), outputPath));
 				index =(int) reader.getFilePointer();
 				count++;
 			}
 		}
 		if (line != jobConf.getMapSplit()) {
-			waitingMapTasks.put(new Task(jobConf.getJarUrl(), TaskType.MAP_TASK, inputFile, index,(int) reader.getFilePointer() - index, jobConf.getMapperClass(), jobConf.getJobId(), mapFilePrefix + count));
+			String outputPath = jobConf.getMRHome() + jobConf.getJobId() + "/" + mapFilePrefix + count;
+			waitingMapTasks.put(new Task(jobConf.getJarUrl(), TaskType.MAP_TASK, inputFile, index,(int) reader.getFilePointer() - index, jobConf.getMapperClass(), outputPath));
 			count++;
 		}
 		reader.close();
@@ -76,7 +78,8 @@ public class Job {
 	public void createReduceTasks(List<String> files) throws InterruptedException, ClassNotFoundException, MalformedURLException {
 		int count = 0;
 		for (String file : files) {
-			waitingReduceTasks.put(new Task(jobConf.getJarUrl(), TaskType.REDUCE_TASK, file, 0, (int)new File(file).length(), jobConf.getReducerClass(), jobConf.getJobId(), redFilePrefix + count));
+			String outputPath = jobConf.getMRHome() + jobConf.getJobId() + "/" + redFilePrefix + count;
+			waitingReduceTasks.put(new Task(jobConf.getJarUrl(), TaskType.REDUCE_TASK, file, 0, (int)new File(file).length(), jobConf.getReducerClass(), outputPath));
 			count++;
 		}
 	}
@@ -217,6 +220,7 @@ public class Job {
 				try(PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(prefix + reducer , true)))) {
 					out.println(line);
 				}catch (IOException e) {
+					System.out.println("Error when writing files in shuffle stage.");
 				}
 			}
 			br.close();

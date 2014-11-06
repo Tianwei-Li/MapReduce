@@ -18,6 +18,6 @@ public class DoubleWritable implements Writable {
 	}
 	@Override
 	public String toString() {
-		return "DoubleWritable [value=" + value + "]";
+		return String.valueOf(value);
 	}
 }

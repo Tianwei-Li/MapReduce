@@ -24,6 +24,8 @@ public class TaskThread extends Thread {
 			
 			// run the mapper task or reducer task
 			task.runTask(split);
+			task.writeResultToFile();
+			finished = true;
 			
 		} catch (Exception e) {
 			e.printStackTrace();

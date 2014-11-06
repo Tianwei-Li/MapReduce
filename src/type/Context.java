@@ -21,11 +21,9 @@ public class Context implements Serializable{
 	final Class<?> inputValueClass;
 	final Class<?> outputKeyClass;
 	final Class<?> outputValueClass;
-	final String jobId;
-	final String taskId;
 	final String jarURL;
 	
-	public Context(String jarURL, String workClassName, String jobId, String taskId) throws ClassNotFoundException, MalformedURLException {
+	public Context(String jarURL, String workClassName) throws ClassNotFoundException, MalformedURLException {
 		this.jarURL = jarURL;
 		this.workClass = workClassName;
 		ClassLoader loader = URLClassLoader.newInstance(
@@ -37,8 +35,6 @@ public class Context implements Serializable{
 		outputKeyClass = WritableFacility.getClass(workClass.getGenericSuperclass(), 2, 0);
 		outputValueClass = WritableFacility.getClass(workClass.getGenericSuperclass(), 3, 0);
 		result = new ArrayList<>();
-		this.jobId = jobId;
-		this.taskId = taskId;
 	}
 	
 	public void collect(Pair<?, ?> pair) {

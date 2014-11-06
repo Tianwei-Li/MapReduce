@@ -20,6 +20,6 @@ public class LongWritable implements Writable{
 	}
 	@Override
 	public String toString() {
-		return "LongWritable [value=" + value + "]";
+		return String.valueOf(value);
 	}
 }

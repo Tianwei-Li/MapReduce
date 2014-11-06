@@ -18,7 +18,7 @@ public class IntWritable implements Writable {
 	}
 	@Override
 	public String toString() {
-		return "IntWritable [value=" + value + "]";
+		return String.valueOf(value);
 	}
 	
 }

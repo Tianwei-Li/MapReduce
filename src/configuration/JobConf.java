@@ -22,7 +22,7 @@ public class JobConf {
 	
 	public JobConf(String jobName) {
 		this.jobName = jobName;
-		jobId = String.valueOf(UUID.randomUUID().getLeastSignificantBits());
+		jobId = "job" + String.valueOf(Math.abs(UUID.randomUUID().getLeastSignificantBits()));
 	}
 	
 	
