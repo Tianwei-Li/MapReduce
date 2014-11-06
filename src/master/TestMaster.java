@@ -19,6 +19,7 @@ public class TestMaster {
 	public ServerSocket listenSock;
 	public ListenThread listenThread;
 	public HealthChkThread healthChkThread;
+	public String configFile;
 	private static TestMaster inst = new TestMaster();
 
 	public ConcurrentHashMap<String, Peer> slaveMap;
@@ -43,7 +44,8 @@ public class TestMaster {
 	}
 
 	public void init(String configFileName, String localName) throws IOException {
-
+		
+		configFile = configFileName;
 		// parse the configuration file
 		if (parseConfig(configFileName, localName) == false) {
 			return;
