@@ -16,5 +16,9 @@ public class IntWritable implements Writable {
 	public Writable parse(String str) {
 		return new IntWritable(Integer.parseInt(str));
 	}
+	@Override
+	public String toString() {
+		return "IntWritable [value=" + value + "]";
+	}
 	
 }

@@ -8,8 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.net.UnknownHostException;
 import java.rmi.Naming;
 import java.rmi.registry.LocateRegistry;
@@ -17,7 +15,9 @@ import java.rmi.registry.Registry;
 import java.util.List;
 import java.util.Map;
 
-import message.*;
+import message.HeartBeatMessage;
+import message.HelloMessage;
+import message.Message;
 
 import org.yaml.snakeyaml.Yaml;
 
@@ -26,6 +26,8 @@ import util.Peer;
 public class TestSlave {
 	Peer me = null;
 	Peer master = null;
+	Peer fileServer = null;
+	String fileServerName = "FileServer";
 	int heartBeatInterval = 5;   // in second
 
 	TestSlave(String configFileName, String localName, String masterName) {
@@ -119,6 +121,10 @@ public class TestSlave {
 
 			if (name.equalsIgnoreCase(masterName)) {
 				master = new Peer(name, ip, port);
+			}
+			
+			if (name.equalsIgnoreCase(fileServerName)) {
+				fileServer = new Peer(name, ip, port);
 			}
 		}
 		return true;

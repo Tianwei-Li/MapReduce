@@ -52,9 +52,7 @@ public class Task implements Serializable{
 		method.invoke(context.getWorkClass().newInstance(), split, context);
 		
 
-		PrintWriter writer = new PrintWriter("slave_log.txt");
-		writer.println(context.getResult());
-		writer.close();
+		System.out.println(context.getResult());
 	}
 
 }

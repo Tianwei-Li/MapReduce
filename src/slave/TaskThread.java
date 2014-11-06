@@ -1,11 +1,8 @@
 package slave;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-
-import file.FileClient;
 import master.Task;
 import util.Peer;
+import file.FileClient;
 
 public class TaskThread extends Thread {
 	TestSlave slave = null;
@@ -20,10 +17,10 @@ public class TaskThread extends Thread {
 	
 	@Override
 	public void run() {
-		Peer master = slave.master;
+		Peer fileServer = slave.fileServer;
 		String split = null;
 		try {
-			split = FileClient.requestFileFromServer(master.getIp(), master.getPort(), task.getInPath(), task.getIndex(), task.getLen());
+			split = FileClient.requestFileFromServer(fileServer.getIp(), fileServer.getPort(), task.getInPath(), task.getIndex(), task.getLen());
 			
 			// run the mapper task or reducer task
 			task.runTask(split);

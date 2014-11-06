@@ -16,4 +16,8 @@ public class DoubleWritable implements Writable {
 	public Writable parse(String str) {
 		return new DoubleWritable(Double.parseDouble(str));
 	}
+	@Override
+	public String toString() {
+		return "DoubleWritable [value=" + value + "]";
+	}
 }

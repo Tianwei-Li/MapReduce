@@ -191,6 +191,8 @@ public class TestMaster {
 		config.setMapperClass(args[5]);
 		config.setReducerClass(args[6]);
 		
+		
+		
 		Job job = new Job(config);
 		jobList.add(job);
 	}

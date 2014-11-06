@@ -16,4 +16,8 @@ public class Text implements Writable {
 	public Writable parse(String str) {
 		return new Text(str);
 	}
+	@Override
+	public String toString() {
+		return "Text [text=" + text + "]";
+	}
 }

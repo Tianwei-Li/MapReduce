@@ -18,4 +18,8 @@ public class LongWritable implements Writable{
 	public Writable parse(String str) {
 		return new LongWritable(Long.parseLong(str));
 	}
+	@Override
+	public String toString() {
+		return "LongWritable [value=" + value + "]";
+	}
 }
