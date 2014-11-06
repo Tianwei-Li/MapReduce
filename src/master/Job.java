@@ -25,7 +25,7 @@ import org.yaml.snakeyaml.Yaml;
 import configuration.JobConf;
 
 public class Job {
-	public ConcurrentHashMap<String, ArrayList<RunningTask>> runningTaskMap;
+	public ConcurrentHashMap<String, BlockingQueue<RunningTask>> runningTaskMap;
 	public BlockingQueue<Task> waitingMapTasks;
 	public BlockingQueue<Task> waitingReduceTasks; 
 	public JobConf jobConf = null;
@@ -38,7 +38,7 @@ public class Job {
 
 	public Job(JobConf conf) throws IOException, InterruptedException, ClassNotFoundException {
 		jobConf = conf;
-		runningTaskMap = new ConcurrentHashMap<String, ArrayList<RunningTask>>();
+		runningTaskMap = new ConcurrentHashMap<String, BlockingQueue<RunningTask>>();
 		waitingMapTasks = new LinkedBlockingQueue<Task>();
 		waitingReduceTasks = new LinkedBlockingQueue<Task>();
 
@@ -88,7 +88,7 @@ public class Job {
 	 */
 	public void cancelTasks(String slaveName) {
 		if (runningTaskMap.containsKey(slaveName)) {
-			ArrayList<RunningTask> runningTasks = runningTaskMap.remove(slaveName);
+			BlockingQueue<RunningTask> runningTasks = runningTaskMap.remove(slaveName);
 			for (RunningTask runningTask : runningTasks) {
 				if (runningTask.getTaskType() == TaskType.MAP_TASK) {
 					waitingMapTasks.add(runningTask.task);
@@ -101,9 +101,9 @@ public class Job {
 
 	public void freeFinishedTasks() {
 		TestMaster inst = TestMaster.getInstance();
-		for (Map.Entry<String, ArrayList<RunningTask>> entry : runningTaskMap.entrySet()) {
+		for (Map.Entry<String, BlockingQueue<RunningTask>> entry : runningTaskMap.entrySet()) {
 			String slaveName = entry.getKey();
-			ArrayList<RunningTask> runningTasks = entry.getValue();
+			BlockingQueue<RunningTask> runningTasks = entry.getValue();
 			for (RunningTask runningTask : runningTasks) {
 				if (runningTask.isFinished() == true) {
 					runningTasks.remove(runningTask);
@@ -122,9 +122,9 @@ public class Job {
 	
 	public void terminateJob() {
 		TestMaster inst = TestMaster.getInstance();
-		for (Map.Entry<String, ArrayList<RunningTask>> entry : runningTaskMap.entrySet()) {
+		for (Map.Entry<String, BlockingQueue<RunningTask>> entry : runningTaskMap.entrySet()) {
 			String slaveName = entry.getKey();
-			ArrayList<RunningTask> runningTasks = entry.getValue();
+			BlockingQueue<RunningTask> runningTasks = entry.getValue();
 			for (RunningTask runningTask : runningTasks) {
 				runningTasks.remove(runningTask);
 
@@ -175,9 +175,9 @@ public class Job {
 					slots.set(slotIdx, slots.get(slotIdx) - 1);
 
 					// add the running task to runningTaskMap
-					ArrayList<RunningTask> runningList = null;
+					BlockingQueue<RunningTask> runningList = null;
 					if (runningTaskMap.containsKey(slaveName) == false) {
-						runningList = new ArrayList<RunningTask>();
+						runningList = new LinkedBlockingQueue<RunningTask>();
 					} else {
 						runningList = runningTaskMap.get(slaveName);
 					}
