@@ -39,7 +39,7 @@ public class RecvThread extends Thread {
 					SendFileRequestMessage sfMsg = (SendFileRequestMessage) message;
 					//Can go wrong here. 
 					recvSocket.getInputStream().read();
-					FileServer.receiveFile(recvSocket, sfMsg.getJobId(), sfMsg.getTaskId(), sfMsg.getLen());
+					FileServer.receiveFile(recvSocket, sfMsg.getFilePath(), sfMsg.getLen());
 					break;
 				default:
 					break;

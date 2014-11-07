@@ -25,7 +25,7 @@ public class FileClient {
 	}
 	
 	public static void sendFileTest() throws IOException, InterruptedException {
-		sendFile("127.0.0.1", 15217, "compcomp.jar", "job007", "m_0009.jar");
+		sendFile("127.0.0.1", 15217, "compcomp.jar");
 	}
 	
 	
@@ -100,12 +100,20 @@ public class FileClient {
 		return Arrays.asList(lines);
 	}
 	
-	public static void sendFile(String ip, int port, String filePath, String jobId, String taskId) throws IOException, InterruptedException {
+	public static void sendFile(String ip, int port, String filePath) throws IOException, InterruptedException {
 		int len = (int) new File(filePath).length();
-		Message message = new SendFileRequestMessage(jobId, taskId, len);
-		Thread.sleep(1000);
+		Message message = new SendFileRequestMessage(filePath, len);
+		Thread.sleep(100);
 		Socket socket = send(message, ip, port);
 		FileServer.sendFile(socket, filePath, 0, len);
+		
+	}
+	
+	public static void sendFile(String ip, int port, String filePath, byte[] bytes) throws IOException, InterruptedException {
+		Message message = new SendFileRequestMessage(filePath, bytes.length);
+		Socket socket = send(message, ip, port);
+		Thread.sleep(100);
+		FileServer.sendFile(socket, filePath, bytes);
 		
 	}
 }

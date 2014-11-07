@@ -9,14 +9,12 @@ public class SendFileRequestMessage extends Message implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = -4151219710911616153L;
-	final String jobId;
-	final String taskId;
+	final String filePath;
 	final int len;
 
-	public SendFileRequestMessage(String jobId, String taskId, int len) {
+	public SendFileRequestMessage(String filePath, int len) {
 		super(MessageType.SENDFILEREQUEST_MSG);
-		this.jobId = jobId;
-		this.taskId = taskId;
+		this.filePath = filePath;
 		this.len = len;
 	}
 
@@ -27,13 +25,10 @@ public class SendFileRequestMessage extends Message implements Serializable{
 	}
 
 
-	public String getJobId() {
-		return jobId;
+
+	public String getFilePath() {
+		return filePath;
 	}
 
-
-	public String getTaskId() {
-		return taskId;
-	}
 
 }

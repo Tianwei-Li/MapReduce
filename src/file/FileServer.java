@@ -128,6 +128,7 @@ public class FileServer {
 		
 		
 		OutputStream os = socket.getOutputStream();
+		os.flush();
 		os.write(bytesToSend);
 		os.flush();
 		System.out.println("sending file: " + filePath + " from "+ index);
@@ -135,7 +136,16 @@ public class FileServer {
 		file.close();
 	}
 	
-	public static void receiveFile(Socket socket, String jobId, String taskId, int len) throws IOException {
+	public static void sendFile(Socket socket, String filePath, byte[] bytesToSend) throws IOException {
+		OutputStream os = socket.getOutputStream();
+		os.flush();
+		os.write(bytesToSend);
+		os.flush();
+		System.out.println("sending file: " + filePath);
+		os.close();
+	}
+	
+	public static void receiveFile(Socket socket, String filePath, int len) throws IOException {
 		byte[] mybytearray = new byte[len];
 		InputStream is = socket.getInputStream();
 		int bytesRead = is.read(mybytearray, 0, mybytearray.length);
@@ -146,13 +156,13 @@ public class FileServer {
 			if (bytesRead > 0)
 				current += bytesRead;
 		} while (bytesRead > 0);
-		File jobDir = new File(hadoopHome + jobId);
-		if (!jobDir.exists()) {
-			jobDir.mkdirs();
+		File jobDir = new File(filePath);
+		if (!jobDir.getParentFile().exists()) {
+			jobDir.getParentFile().mkdirs();
 		}
-		FileOutputStream fos = new FileOutputStream(hadoopHome + jobId + "/" + taskId );
+		FileOutputStream fos = new FileOutputStream(jobDir );
 		fos.write(mybytearray);
 		fos.close();
-		System.out.println("receiving file of \njob: " + jobId + "\ntask: " + taskId);
+		System.out.println("receiving file of " + filePath);
 	}
 }

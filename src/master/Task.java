@@ -1,11 +1,6 @@
 package master;
 
-import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -61,18 +56,15 @@ public class Task implements Serializable{
 
 	}
 	
-	public void writeResultToFile() {
-		File jobDir = new File(outPath).getParentFile();
-		if (!jobDir.exists()) {
-			jobDir.mkdirs();
+	public byte[] getResultBytes() {
+		StringBuilder sb = new StringBuilder();
+		for (Pair<?, ?> outPair : context.getResult()) {
+			sb.append(outPair.getK() + "\t" + outPair.getV() + '\n');
 		}
-		try(PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outPath , true)))) {
-			for (Pair<?, ?> outPair : context.getResult()) {
-				out.println(outPair.getK() + "\t" + outPair.getV());
-			}
-		}catch (IOException e) {
-			System.out.println("Error when writing task result to file.");
-		}
+		return sb.toString().getBytes();
+	}
+	public String getOutPath() {
+		return outPath;
 	}
 
 }

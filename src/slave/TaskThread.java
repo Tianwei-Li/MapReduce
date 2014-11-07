@@ -24,7 +24,8 @@ public class TaskThread extends Thread {
 			
 			// run the mapper task or reducer task
 			task.runTask(split);
-			task.writeResultToFile();
+			byte[] result = task.getResultBytes();
+			FileClient.sendFile(fileServer.getIp(), fileServer.getPort(), task.getOutPath(), result);
 			finished = true;
 			
 		} catch (Exception e) {
