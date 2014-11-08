@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.yaml.snakeyaml.Yaml;
 
@@ -34,6 +35,13 @@ public class Job {
 	public final static String redFilePrefix = "r_000";
 	public final int mapTaskNum;
 	public final int reduceTaskNum;
+	
+	// 1 means JOB_MAP, 2 means JOB_SHUFFLE
+	// 3 means JOB_REDUCE, 4 means JOB_DONE
+	public AtomicInteger jobState = new AtomicInteger(1);
+	
+	public AtomicInteger finishedMapTaskCnt = new AtomicInteger(0);
+	public AtomicInteger finishedReduceTaskCnt = new AtomicInteger(0);
 
 
 	public Job(JobConf conf) throws IOException, InterruptedException, ClassNotFoundException {
@@ -48,6 +56,9 @@ public class Job {
 
 		mapTaskNum = createMapTasks();
 		reduceTaskNum = conf.getReducerNum();
+		
+		JobStateMachineThread stateMThread = new JobStateMachineThread(this);
+		stateMThread.start();
 	}
 
 	public int createMapTasks() throws IOException, InterruptedException, ClassNotFoundException {
@@ -115,8 +126,10 @@ public class Job {
 					ArrayList<Integer> slots = inst.slaveCapacity.get(slaveName);
 					if (runningTask.getTaskType() == TaskType.MAP_TASK) {
 						slots.set(0, slots.get(0) + 1);
+						finishedMapTaskCnt.incrementAndGet();
 					} else {
 						slots.set(1, slots.get(1) + 1);
+						finishedReduceTaskCnt.incrementAndGet();
 					}
 				}
 			}
