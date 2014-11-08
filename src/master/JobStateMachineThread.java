@@ -31,9 +31,6 @@ public class JobStateMachineThread extends Thread {
 					e.printStackTrace();
 				}
 				
-				// create reduce task
-				job.createReduceTasks(files);
-				
 				job.jobState.incrementAndGet();
 			} else if (job.jobState.get() == 3) {
 				if (job.finishedReduceTaskCnt.get() == job.reduceTaskNum) {
