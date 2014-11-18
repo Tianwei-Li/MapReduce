@@ -53,6 +53,11 @@ public class RecvThread extends Thread {
 						Peer slave = inst.slaveMap.get(name);
 						slave.setTimeStamp(System.currentTimeMillis());
 						break;
+					case SUBMITJOB_MSG:
+						SubmitJobMessage sMsg = (SubmitJobMessage)message;
+						String[] subArgs = sMsg.getMsg().trim().split(" +");
+						inst.submitJob(subArgs);
+						break;
 					default:
 						break;
 					}
@@ -65,6 +70,9 @@ public class RecvThread extends Thread {
 		} catch (SecurityException e) {
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

@@ -42,6 +42,8 @@ public class Job {
 	
 	public AtomicInteger finishedMapTaskCnt = new AtomicInteger(0);
 	public AtomicInteger finishedReduceTaskCnt = new AtomicInteger(0);
+	
+	public JobStateMachineThread stateMThread;
 
 
 	public Job(JobConf conf) throws IOException, InterruptedException, ClassNotFoundException {
@@ -57,7 +59,7 @@ public class Job {
 		mapTaskNum = createMapTasks();
 		reduceTaskNum = conf.getReducerNum();
 		
-		JobStateMachineThread stateMThread = new JobStateMachineThread(this);
+		stateMThread = new JobStateMachineThread(this);
 		stateMThread.start();
 	}
 

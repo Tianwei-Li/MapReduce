@@ -14,12 +14,17 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
+import master.Job;
 import message.HeartBeatMessage;
 import message.HelloMessage;
 import message.Message;
+import message.SubmitJobMessage;
 
 import org.yaml.snakeyaml.Yaml;
+
+import configuration.JobConf;
 
 import util.Peer;
 
@@ -29,6 +34,7 @@ public class TestSlave {
 	Peer fileServer = null;
 	String fileServerName = "FileServer";
 	int heartBeatInterval = 5;   // in second
+	SendHeartBeatThread heartBeatThread;
 
 	TestSlave(String configFileName, String localName, String masterName) {
 		// parse the configuration file
@@ -135,9 +141,9 @@ public class TestSlave {
 		// registry rmi
 		try {
 			Naming.rebind (me.getName(), new LaunchTask (this));
-			System.out.println ("Server is ready.");
+			System.out.println ("Slave is ready.");
 		} catch (Exception e) {
-			System.out.println ("Server failed: " + e);
+			System.out.println ("Slave failed: " + e);
 		}
 
 		// send hello message
@@ -145,17 +151,49 @@ public class TestSlave {
 		send(hMsg);
 		
 		// send the heat beat message
+		heartBeatThread = new SendHeartBeatThread(this);
+		heartBeatThread.start();
+		
+		Scanner in = new Scanner(System.in);
 		while (true) {
-			HeartBeatMessage heartBeatMsg = new HeartBeatMessage();
-			send(heartBeatMsg);
+			System.out.println("Slave node > ");
+			String line = in.nextLine();
 			
-			try {
-				Thread.sleep(5000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			String[] args = line.split("\\s+");
+			if (args[0].equalsIgnoreCase("help")) {
+				printHelp();
+			} else if (args[0].equalsIgnoreCase("submit")) {
+				submitJob(args);
+			} else if (args[0].equalsIgnoreCase("exit")) {
+				shutdown();
+				break;
+			} else {
+				System.out.println(line + " is not a valid command!");
+				System.out.println("input help for more information.");
 			}
+			
 		}
+		in.close();
 
+	}
+	
+	private void printHelp() {
+		System.out.println("submit - submit a job.");
+		System.out.println("exit    - exit the application.");
+	}
+	
+	private void shutdown() {
+		heartBeatThread.cancel();
+	}
+	
+	public void submitJob(String[] args) {
+		StringBuilder strBld = new StringBuilder();
+		for (String str : args) {
+			strBld.append(str);
+			strBld.append(" ");
+		}
+		SubmitJobMessage msg = new SubmitJobMessage(strBld.toString());
+		send(msg);
 	}
 
 

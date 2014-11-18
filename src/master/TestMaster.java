@@ -161,11 +161,11 @@ public class TestMaster {
 			} else if (args[0].equalsIgnoreCase("submit")) {
 				submitJob(args);
 			} else if (args[0].equalsIgnoreCase("monitor")) {
-				//createProcess(args);
+				monitorJobs();
 			} else if (args[0].equalsIgnoreCase("terminate")) {
 				terminateJob(args);
 			}else if (args[0].equalsIgnoreCase("exit")) {
-				//shutdown();
+				shutdown();
 				break;
 			} else {
 				System.out.println(line + " is not a valid command!");
@@ -181,6 +181,35 @@ public class TestMaster {
 		System.out.println("monitor - check the progress of jobs.");
 		System.out.println("terminate - terminate a job.");
 		System.out.println("exit    - exit the application.");
+	}
+	
+	private void monitorJobs() {
+		StringBuilder strBld = new StringBuilder();
+		for (Job job : jobList) {
+			strBld.setLength(0);
+			strBld.append("Job Name: ");
+			strBld.append(job.jobConf.getJobName());
+			strBld.append("  Job ID: ");
+			strBld.append(job.jobConf.getJobId());
+			strBld.append("  map: ");
+			float percent = (job.finishedMapTaskCnt.floatValue() / job.mapTaskNum) * 100;
+			strBld.append(String.format("%.0f%%",percent));
+			
+			strBld.append("  reduce: ");
+			percent = (job.finishedReduceTaskCnt.floatValue() / job.reduceTaskNum) * 100;
+			strBld.append(String.format("%.0f%%",percent));
+			strBld.append("\n");
+			
+			System.out.println(strBld.toString());
+		}
+	}
+	
+	private void shutdown() {
+		listenThread.cancel();
+		healthChkThread.cancel();
+		for (Job job : jobList) {
+			job.stateMThread.cancel();
+		}
 	}
 	
 	public void submitJob(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
@@ -208,11 +237,6 @@ public class TestMaster {
 			}
 		}
 	}
-	
-	
-
-
-
 
 	public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
 		if (args.length != 2) {
