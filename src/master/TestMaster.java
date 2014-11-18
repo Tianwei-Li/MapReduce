@@ -194,7 +194,6 @@ public class TestMaster {
 		config.setReducerClass(args[6]);
 		
 		
-		
 		Job job = new Job(config);
 		jobList.add(job);
 	}

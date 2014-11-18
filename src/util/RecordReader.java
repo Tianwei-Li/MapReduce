@@ -60,7 +60,7 @@ public class RecordReader<K, V> {
 				if (index != -1)
 					keyString1 = arg0.substring(0, index);
 				
-				index = arg0.indexOf('\t');
+				index = arg1.indexOf('\t');
 				String keyString2 = "";
 				if (index != -1)
 					keyString2 = arg1.substring(0, index);
@@ -89,13 +89,14 @@ public class RecordReader<K, V> {
 			
 			String valString = line.substring(index + 1);
 			//Get generic type for iterator.
-			Writable writableVal = ((Writable)WritableFacility.getClass(context.getInputValueClass().getGenericSuperclass(), 0, 0).newInstance()).parse(valString);
+			Writable writableVal = ((Writable)context.getInputValueClass().newInstance()).parse(valString);
 			iterable.add(writableVal);
 		}
 		
 		//Add the last key value pair.
 		Writable writableKey = ((Writable)context.getInputKeyClass().newInstance()).parse(key);
 		list.add(new Pair<K, V>((K) writableKey, (V) iterable.iterator()));
+		iterator = list.iterator();
 	}
 	
 	public boolean getNextKeyValue() {

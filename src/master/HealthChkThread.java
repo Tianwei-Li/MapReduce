@@ -50,7 +50,7 @@ public class HealthChkThread extends Thread {
 			}
 			
 			try {
-				thisThread.sleep(10000);
+				thisThread.sleep(3000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
