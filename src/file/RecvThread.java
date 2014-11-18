@@ -57,8 +57,12 @@ public class RecvThread extends Thread {
 		}
 		
 		try {
+			Thread.sleep(5000);
 			recvSocket.close();
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

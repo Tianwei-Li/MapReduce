@@ -46,11 +46,16 @@ public class HealthChkThread extends Thread {
 			
 			// assign waiting tasks to available slave
 			for (Job job : inst.jobList) {
-				job.assignTasks();
+				try {
+					job.assignTasks();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			
 			try {
-				thisThread.sleep(10000);
+				thisThread.sleep(1000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -89,7 +89,7 @@ public class Job {
 	public void createReduceTasks(List<String> files) throws InterruptedException, ClassNotFoundException, MalformedURLException {
 		int count = 0;
 		for (String file : files) {
-			String outputPath = jobConf.getMRHome() + jobConf.getJobId() + "/" + redFilePrefix + count;
+			String outputPath = jobConf.getOutputPath() + "/" + jobConf.getJobId() + "/" + redFilePrefix + count;
 			waitingReduceTasks.put(new Task(jobConf.getJarUrl(), TaskType.REDUCE_TASK, file, 0, (int)new File(file).length(), jobConf.getReducerClass(), outputPath));
 			count++;
 		}
@@ -156,7 +156,7 @@ public class Job {
 	}
 
 
-	public void assignTasks() {
+	public void assignTasks() throws InterruptedException {
 		if (waitingReduceTasks.size() != 0) {
 			assignTask(waitingReduceTasks, 1);
 		} else {
@@ -164,7 +164,7 @@ public class Job {
 		}
 	}
 
-	private void assignTask(BlockingQueue<Task> waitingTasks, int slotIdx) {
+	private void assignTask(BlockingQueue<Task> waitingTasks, int slotIdx) throws InterruptedException {
 		if (waitingTasks.size() == 0) {
 			return;
 		}
@@ -201,6 +201,7 @@ public class Job {
 					runningTaskMap.put(slaveName, runningList);
 
 				} catch (Exception e) {
+					waitingTasks.put(task);
 					e.printStackTrace();
 				}
 
