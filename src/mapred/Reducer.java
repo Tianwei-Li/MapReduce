@@ -17,7 +17,7 @@ public abstract class Reducer<K1, V1, K2, V2> implements MapRedBase<K1, V1, K2, 
 		setup();
 		
 		RecordReader<K1, V1> reader = new RecordReader<K1, V1>();
-		reader.initialize(split, context);
+		reader.initializeReduce(split, context);
 		
 		while (reader.getNextKeyValue()) {
 			reduce(reader.getCurrentKey(), reader.getCurrentValue(), context);
