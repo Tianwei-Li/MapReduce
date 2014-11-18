@@ -5,6 +5,9 @@ configuration :
   - name : alice
     ip : 127.0.0.1
     port : 12346
+  - name : bob
+    ip : 127.0.0.1
+    port : 15640
   - name : FileServer
     ip : 127.0.0.1
     port : 15217

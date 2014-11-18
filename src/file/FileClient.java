@@ -114,6 +114,6 @@ public class FileClient {
 		Socket socket = send(message, ip, port);
 		Thread.sleep(100);
 		FileServer.sendFile(socket, filePath, bytes);
-		
+		socket.close();
 	}
 }
