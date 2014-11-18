@@ -145,13 +145,12 @@ public class TestSlave {
 		send(hMsg);
 		
 		// send the heat beat message
-		Thread thisThread = Thread.currentThread();
 		while (true) {
 			HeartBeatMessage heartBeatMsg = new HeartBeatMessage();
 			send(heartBeatMsg);
 			
 			try {
-				thisThread.sleep(5000);
+				Thread.sleep(5000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

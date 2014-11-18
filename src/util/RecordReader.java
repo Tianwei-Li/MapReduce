@@ -8,7 +8,6 @@ import java.util.List;
 
 import type.Context;
 import type.Writable;
-import type.WritableFacility;
 
 public class RecordReader<K, V> {
 	Iterator<Pair<K, V>> iterator;

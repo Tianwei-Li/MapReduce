@@ -220,7 +220,7 @@ public class Job {
 	public void shuffle() throws IOException, InterruptedException, ClassNotFoundException {
 		List<String> outputFiles = new ArrayList<>();
 		File jobDir = new File(jobConf.getMRHome() + jobConf.getJobId());
-		final int reduceNumb = jobConf.getReducerNum();
+		final int reduceNumb = jobConf.getReducerNum() * TestMaster.getInstance().slaveMap.size();
 		final String prefix = jobDir + "/" + shuffleFilePrefix;
 		//split the mapper files into pieces.
 		for (File file : jobDir.listFiles()) {
