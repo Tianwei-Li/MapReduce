@@ -12,7 +12,7 @@ public class JobStateMachineThread extends Thread {
 	@Override
 	public void run() {
 		Thread thisThread = Thread.currentThread();
-		while (job.jobState.get() != 4) {
+		while (thisThread.isInterrupted() == false && job.jobState.get() != 4) {
 			try {
 				thisThread.sleep(2000);
 			} catch (InterruptedException e) {
@@ -38,6 +38,10 @@ public class JobStateMachineThread extends Thread {
 				}
 			}
 		}
+	}
+	
+	public void cancel() { 
+		interrupt(); 
 	}
 
 }

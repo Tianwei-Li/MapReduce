@@ -15,16 +15,21 @@ public class ListenThread extends Thread {
 	
 	@Override
 	public void run() {
+		Thread thisThread = Thread.currentThread();
 		TestMaster inst = TestMaster.getInstance();
 		try {
-			while (true) {
+			while (thisThread.isInterrupted() == false) {
 				Socket skt = inst.listenSock.accept();
 				(new RecvThread(skt)).start();
 			}
 		} catch (IOException e) {
-			System.out.println("listening thread terminated successfully.");
+			//System.out.println("listening thread terminated successfully.");
 			//e.printStackTrace();
 		}
+	}
+	
+	public void cancel() { 
+		interrupt(); 
 	}
 
 }
