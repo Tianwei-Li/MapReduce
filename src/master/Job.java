@@ -34,7 +34,7 @@ public class Job {
 	public final static String mapFilePrefix = "m_000";
 	public final static String redFilePrefix = "r_000";
 	public final int mapTaskNum;
-	public final int reduceTaskNum;
+	public int reduceTaskNum;
 	
 	// 1 means JOB_MAP, 2 means JOB_SHUFFLE
 	// 3 means JOB_REDUCE, 4 means JOB_DONE
@@ -248,6 +248,7 @@ public class Job {
 		}
 		
 		//fill reduce task in the queue
+		this.reduceTaskNum = reduceNumb;
 		createReduceTasks(outputFiles);
 	}
 

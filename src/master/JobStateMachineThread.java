@@ -17,6 +17,7 @@ public class JobStateMachineThread extends Thread {
 				thisThread.sleep(2000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
+				return;
 			}
 			
 			if (job.jobState.get() == 1) {

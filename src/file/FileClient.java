@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 
@@ -81,17 +82,24 @@ public class FileClient {
 		final Socket socket = send(message, ip, port);
 		byte[] mybytearray = new byte[len];
 		InputStream is = socket.getInputStream();
-		int bytesRead = is.read(mybytearray, 0, mybytearray.length);
-		int current = bytesRead;
+		try {
+			int bytesRead = is.read(mybytearray, 0, mybytearray.length);
+			int current = bytesRead;
+			do {
+				bytesRead = is.read(mybytearray, current,
+						(mybytearray.length - current));
+				if (bytesRead > 0)
+					current += bytesRead;
+			} while (bytesRead > 0);
 
-		do {
-			bytesRead = is.read(mybytearray, current,
-					(mybytearray.length - current));
-			if (bytesRead > 0)
-				current += bytesRead;
-		} while (bytesRead > 0);
+			return new String(mybytearray);
+		} catch (SocketException exception) {
+			socket.close();
+			return requestFileFromServer(ip,port,filePath,index,len);
+		}
+		
 
-		return new String(mybytearray);
+		
 	}
 	
 	public static Iterable<String> getInputIterable(String ip, int port, String filePath, int index, int len) throws IOException {

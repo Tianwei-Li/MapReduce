@@ -120,7 +120,7 @@ public class FileServer {
 		return inst;
 	}
 	
-	public static void sendFile(Socket socket, String filePath, int index, int len) throws IOException {
+	public static void sendFile(Socket socket, String filePath, int index, int len) throws IOException, InterruptedException {
 		byte[] bytesToSend = new byte[len];
 		RandomAccessFile file = new RandomAccessFile(filePath, "r");
 		file.seek(index);
@@ -131,17 +131,19 @@ public class FileServer {
 		os.flush();
 		os.write(bytesToSend);
 		os.flush();
-		System.out.println("sending file: " + filePath + " from "+ index);
+		//System.out.println("sending file: " + filePath + " from "+ index);
+		Thread.sleep(5000);
 		os.close();
 		file.close();
 	}
 	
-	public static void sendFile(Socket socket, String filePath, byte[] bytesToSend) throws IOException {
+	public static void sendFile(Socket socket, String filePath, byte[] bytesToSend) throws IOException, InterruptedException {
 		OutputStream os = socket.getOutputStream();
 		os.flush();
 		os.write(bytesToSend);
 		os.flush();
-		System.out.println("sending file: " + filePath);
+		Thread.sleep(5000);
+		//System.out.println("sending file: " + filePath);
 		os.close();
 	}
 	
@@ -163,6 +165,6 @@ public class FileServer {
 		FileOutputStream fos = new FileOutputStream(jobDir );
 		fos.write(mybytearray);
 		fos.close();
-		System.out.println("receiving file of " + filePath);
+		//System.out.println("receiving file of " + filePath);
 	}
 }
