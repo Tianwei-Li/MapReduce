@@ -15,14 +15,14 @@ import type.Text;
 import configuration.JobConf;
 
 public class MapRedTest {
-	public static void shuffleTest() throws IOException, InterruptedException {
+	public static void shuffleTest() throws IOException, InterruptedException, ClassNotFoundException {
 		JobConf jobConf = new JobConf("test job");
 		jobConf.setJobId("job007");
 		Job job = new Job(jobConf);
 		job.shuffle();
 	}
 	
-	public static void createTaskTest() throws IOException, InterruptedException {
+	public static void createTaskTest() throws IOException, InterruptedException, ClassNotFoundException {
 		JobConf jobConf = new JobConf("test job");
 		jobConf.setJobId("job007");
 		jobConf.setInputPath("received.txt");

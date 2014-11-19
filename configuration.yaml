@@ -15,5 +15,5 @@ configuration :
 mappercnt : 5
 reducercnt : 2
 
-split_line_number : 10
+split_line_number : 1000
 mr_home : 
